@@ -1,0 +1,26 @@
+{
+  "name": "simpleIsotope",
+  "version": "0.1.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "dependencies": {
+    "gulp-less": "^1.3.6",
+    "gulp": "^3.8.9"
+  },
+  "devDependencies": {
+    "browser-sync": "^1.6.1",
+    "jquery": "^2.1.1"
+  },
+  "scripts": {
+    "build-debug": "browserify source/simple-isotope.amd.js -d --s simpleIsotope > build/simple-isotope.js",
+    "build-min": "browserify source/simple-isotope.amd.js --s simpleIsotope | uglifyjs -c > build/simple-isotope.min.js",
+    "build": "npm run build-debug && npm run build-min",
+    "watch": "watchify source/simple-isotope.amd.js -d --s simpleIsotope -o build/simple-isotope.js -v"
+  },
+  "author": "",
+  "license": "ISC"
+}
