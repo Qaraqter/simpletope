@@ -2,32 +2,22 @@
   "name": "simpleIsotope",
   "version": "0.1.0",
   "description": "Simplified filter and sort magical layouts",
-  "main": [
-	"build/simple-isotope.js",
-	"build/simple-isotope.min.js"
-  ],
-  "directories": {
-    "doc": "docs",
-    "example": "examples"
-  },
   "dependencies": {
+    "gulp-less": "^1.3.6",
+    "gulp": "^3.8.9"
   },
   "devDependencies": {
-    "jquery": "^2.1.1",
-	"isotope": "^2.0.1",
-	"isotope-packery": "^1.0.0",
-	"isotope-fit-columns": "^0.1.3"
+    "browser-sync": "^1.6.1",
+    "jquery": "^2.1.1"
   },
-  "ignore": [
-    "source/",
-    ".gitignore",
-    "gulpfile.js",
-	"package.json"
-  ],
   "scripts": {
     "build-debug": "browserify source/simple-isotope.amd.js -d --s simpleIsotope > build/simple-isotope.js",
     "build-min": "browserify source/simple-isotope.amd.js --s simpleIsotope | uglifyjs -c > build/simple-isotope.min.js",
     "build": "npm run build-debug && npm run build-min",
     "watch": "watchify source/simple-isotope.amd.js -d --s simpleIsotope -o build/simple-isotope.js -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Qaraqter/simpletope.git"
   }
 }
