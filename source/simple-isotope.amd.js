@@ -166,24 +166,31 @@ $.simpleIsotope.prototype = {
 
     _getFilterTest: function(filter) {
 
-        if(filter.indexOf("data-") !== -1) {
-            var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
-            var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
+        if ( jQuery && this.options.isJQueryFiltering ) {
+            // use jQuery
+            return function( item ) {
 
-            cat = cat.map(Function.prototype.call, String.prototype.trim);
-            value = value.map(Function.prototype.call, String.prototype.trim);
+                if(filter.indexOf("data-") !== -1) {
+                    var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
+                    var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
 
-            // Notice: below is the jQuery filter function not the isotope function
-            var active = value.filter(function( filter, index ) {
-                return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
-            });
+                    cat = cat.map(Function.prototype.call, String.prototype.trim);
+                    value = value.map(Function.prototype.call, String.prototype.trim);
 
-            console.log(active, active.length, cat, cat.length);
+                    // Notice: below is the jQuery filter function not the isotope function
+                    var active = value.filter(function( filter, index ) {
+                        return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
+                    });
 
-            return active.length == cat.length;
+                    console.log(active, active.length, cat, cat.length);
 
-        } else {
-            return jQuery( item.element ).is( filter );
+                    return active.length == cat.length;
+
+                } else {
+                    return jQuery( item.element ).is( filter );
+                }
+
+            }
         }
 
     }

@@ -1,6 +1,8 @@
 module.exports = function($args){
     $.extend(this, $args);
 
+    Isotope.prototype._getFilterTest = this._getFilterTest;
+
     var $self = this,
         theHash = this.hash._getHash.call(this);
 
