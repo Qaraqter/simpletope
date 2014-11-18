@@ -21,9 +21,12 @@ module.exports = function() {
             var $filterContainer =   elm.closest('['+$dataForContainer+']'), //Get parent with data-for-container
                 $multiple =          ($filterContainer.length == 0) ? false : $filterContainer.attr($dataType) || false,
                 $container =         ($filterContainer.length == 0) ? $self._getInstances() : $self._getElementsFromSelector($filterContainer.attr($dataForContainer)),
-                $dataFilterAttr =    elm.attr($dataFilter);
+                $dataFilterAttr =    elm.attr($dataFilter),
+                filterContainerId =  ($filterContainer.attr("id") || new Date().getTime());
 
-            $self.instances[$self.guid].filterContainer = $filterContainer;
+            if($self.instances[$self.guid].filterContainer[filterContainerId] == null) {
+                $self.instances[$self.guid].filterContainer[filterContainerId] = $filterContainer;
+            }
 
             elm.on('click', function(e) {
                 e.preventDefault();
@@ -31,12 +34,32 @@ module.exports = function() {
                 var $filterValue = '',
                     active = $self._toggleClass(elm, $filterContainer, $activeClass, $multiple, $dataFilterAttr == $defaultFilter, '['+$dataFilter+'="'+$defaultFilter+'"]');
 
-                $filterValue = $dataFilterAttr;
+                var val = $filterValue = $dataFilterAttr;
                 $.each($container, function(key, $instance) {
 
                     if($self.useHash === true) {
                         $self.hash._setHash.call($self, $instance, $filterValue, active);
                     } else {
+
+                        if($multiple) {
+
+                            if($instance.options.filter == "*" || $filterValue == "*") {
+                                //Do nothing
+                            } else if($instance.options.filter.indexOf($filterValue) === -1) {
+                                $filterValue = $instance.options.filter.split(",");
+                                $filterValue.push(val);
+                                $filterValue = $filterValue.join(",");
+                            } else {
+                                $filterValue = $instance.options.filter.split(",");
+                                $filterValue.splice($filterValue.indexOf(val), 1);
+                                $filterValue = $filterValue.join(",");
+                            }
+
+                            if($filterValue == "") {
+                                $filterValue = "*";
+                            }
+                        }
+
                         $instance.arrange({
                             filter: $filterValue
                         });

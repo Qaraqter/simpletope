@@ -24,11 +24,14 @@ module.exports = function($instance) {
 
             $elm.hide();
 
-            $self.instances[$self.guid].filterContainer.find('.'+$activeClass).removeClass($activeClass);
-            $self.instances[$self.guid].filterContainer.find('['+$dataFilter+'="'+$defaultFilter+'"]').addClass($activeClass);
+            var fn = function(idx, elm) {
+                elm.find('.'+$activeClass).removeClass($activeClass);
+                elm.find('['+$dataFilter+'="'+$defaultFilter+'"]').addClass($activeClass);
+                elm.find('['+$dataSortBy+'="'+$defaultSort+'"]').addClass($activeClass);
+            };
 
-            $self.instances[$self.guid].sortContainer.find('.'+$activeClass).removeClass($activeClass);
-            $self.instances[$self.guid].sortContainer.find('['+$dataSortBy+'="'+$defaultSort+'"]').addClass($activeClass);
+            $.each($self.instances[$self.guid].filterContainer, fn);
+            $.each($self.instances[$self.guid].sortContainer, fn);
 
         }
     });

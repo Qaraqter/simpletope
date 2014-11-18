@@ -162,6 +162,30 @@ $.simpleIsotope.prototype = {
         }
 
         // return $tmp;
+    },
+
+    _getFilterTest: function(filter) {
+
+        if(filter.indexOf("data-") !== -1) {
+            var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
+            var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
+
+            cat = cat.map(Function.prototype.call, String.prototype.trim);
+            value = value.map(Function.prototype.call, String.prototype.trim);
+
+            // Notice: below is the jQuery filter function not the isotope function
+            var active = value.filter(function( filter, index ) {
+                return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
+            });
+
+            console.log(active, active.length, cat, cat.length);
+
+            return active.length == cat.length;
+
+        } else {
+            return jQuery( item.element ).is( filter );
+        }
+
     }
 };
 
@@ -172,3 +196,44 @@ $(document).ready(function() {
         $(elm).simpleIsotope();
     })
 });
+
+
+/*Isotope.prototype._getFilterTest = function( filter ) {
+    if ( jQuery && this.options.isJQueryFiltering ) {
+        // use jQuery
+        return function( item ) {
+
+            if(filter.indexOf("data-") !== -1) {
+                var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
+                var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
+
+                cat = cat.map(Function.prototype.call, String.prototype.trim);
+                value = value.map(Function.prototype.call, String.prototype.trim);
+
+                // Notice: below is the jQuery filter function not the isotope function
+                var active = value.filter(function( filter, index ) {
+                    return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
+                });
+
+                console.log(active, active.length, cat, cat.length);
+
+                return active.length == cat.length;
+
+            } else {
+                return jQuery( item.element ).is( filter );
+            }
+
+        };
+    }
+    if ( typeof filter === 'function' ) {
+        // use filter as function
+        return function( item ) {
+            return filter( item.element );
+        };
+    }
+    // default, use filter as selector string
+    return function( item ) {
+        return matchesSelector( item.element, filter );
+    };
+};
+*/

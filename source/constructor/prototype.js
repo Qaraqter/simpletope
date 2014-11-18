@@ -14,7 +14,9 @@ module.exports = function($args){
             itemSelector: $self.settings.itemSelector || '.item',
             layoutMode: $self.container.data("layout") || "fitRows",
             getSortData: $self._getSortData()
-        })
+        }),
+        filterContainer: {},
+        sortContainer: {}
     };
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {

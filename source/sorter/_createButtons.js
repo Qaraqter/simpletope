@@ -22,9 +22,12 @@ module.exports = function() {
             var $sortContainer =   $elm.closest('['+$dataForContainer+']'),
                 $multiple =        ($sortContainer.length == 0) ? false : $sortContainer.attr($dataType) || false,
                 $container =       ($sortContainer.length == 0) ? $self._getInstances() : $self._getElementsFromSelector($sortContainer.attr($dataForContainer)),
-                $dataSortAttr =    $elm.attr($dataSortBy);
+                $dataSortAttr =    $elm.attr($dataSortBy),
+                sortContainerId =  ($sortContainer.attr("id") || new Date().getTime());
 
-            $self.instances[$self.guid].sortContainer = $sortContainer;
+            if($self.instances[$self.guid].sortContainer[sortContainerId] == null) {
+                $self.instances[$self.guid].sortContainer[sortContainerId] = $sortContainer;
+            }
 
             var how = {
                 eventName: $elm.prop("tagName").toLowerCase() == "option" ? "change" : "click",
