@@ -5,8 +5,7 @@
 
  module.exports = function() {
     var $hash = window.location.hash || false,
-        $newHash = "",
-        $self = this;
+        $newHash = "";
 
     $hash = ($hash !== false && $hash != "#" && $hash != "") ? decodeURIComponent(window.location.hash) : '*';
 
@@ -15,7 +14,8 @@
          $hash = $hash.slice(1);
     }
 
-    $.each($hash.split("&"), function(key, $partHash) {
+    var hashArray = $hash.split("&");
+    $.each(hashArray, function(key, $partHash) {
 
         if($partHash.indexOf("=") !== -1) {
 
@@ -31,49 +31,20 @@
             for (var i=0; i<values.length; i++) {
                 arr.push("[data-" + name + "='" + values[i] + "']");
 
-                $("[data-filter=\"[data-" + name + "='" + values[i] + "']\"]").addClass($self.settings.defaults.classNames.active);
+                // $("[data-filter=\"[data-" + name + "='" + values[i] + "']\"]").addClass($self.settings.defaults.classNames.active);
             }
 
             $newHash += arr.join(",");
 
         } else {
-            $newHash += $partHash
-                .replace("#", ".")	  //replace "#" with "."
-                .replace(/&/g, ", .");  //replace "&" with ", ."
+            $newHash += ($partHash == "*" || $partHash.charAt(0) == '.') ? $partHash: "." + $partHash;
+        }
+
+        if(key != (hashArray.length - 1)) {
+            $newHash += ",";
         }
 
     });
-
-    //  //Check if this is a data group
-    //  if($hash.indexOf("=") !== -1) {
-    //      $hash = $hash.split("&");
-     //
-    //      for (var i=0; i<$hash.length; i++) {
-    //          var tmp = $hash[i].split("="),
-    //              arr = [];
-     //
-    //          if(tmp.length > 1) {
-    //              var name = tmp[0],
-    //                  values = tmp[1];
-    //          }
-     //
-    //          values = values.split(",");
-    //          for (var i=0; i<values.length; i++) {
-    //
-    //              arr.push("[data-"+name+"='"+values[i]+"']");
-    //          }
-    //         //  console.log(arr);
-    //      }
-     //
-    //      $newHash = arr.join("");
-     //
-    //  } else {
-     //
-    //      $newHash = $hash
-    //          .replace("#", ".")	  //replace "#" with "."
-    //          .replace(/&/g, ", .");  //replace "&" with ", ."
-     //
-    //  }
 
      return $newHash;
 

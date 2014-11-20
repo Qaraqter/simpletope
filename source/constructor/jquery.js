@@ -21,7 +21,8 @@ module.exports = function(){
                     forContainer: 'data-for-container',
                     clearFilter: 'data-clear-filter',
                     feedback: 'data-feedback',
-                    type: 'data-filter-type'
+                    type: 'data-filter-type',
+                    filterMethod: 'data-filter-method'
                 },
                 defaults: {
                     filter: "*",

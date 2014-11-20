@@ -3,10 +3,9 @@
  * @since 0.1.0
  * @param {object} $instance
  * @param {string} $newHash
- * @param {boolean} $active
  */
 
-module.exports = function($instance, $newHash, $active) {
+module.exports = function($instance, $newHash) {
     var $currentHash = ($instance.options.filter == "*") ? "" : $instance.options.filter,
         $combinedHash;
 
@@ -23,7 +22,7 @@ module.exports = function($instance, $newHash, $active) {
 
         $.each($formattedHash, function(key, elm) {
             if(elm === true) {//isClass
-                $endHash.push(key);
+                $endHash.push( (key.charAt(0) == '.') ? key.slice(1) : key );
             } else {//isObject
                 $endHash.push(key + "=" + elm.join(","));
             }
@@ -33,27 +32,6 @@ module.exports = function($instance, $newHash, $active) {
     } else {
         $endHash = $newHash;
     }
-
-    // if($combinedHash.indexOf("data-") !== -1) {//Check if we filter on classes or data attributes
-    //     var $formattedHash = this.hash._formatHash(/\[data\-(.+?)\=\'(.+?)\'\]/g, $combinedHash);
-    //         // .replace(/\'|\"|\[|\]|\{|\}/g, "");
-    //         // .replace(/\:/g, "=");
-    //
-    //     $combinedHash = "";
-    //     console.log($formattedHash);
-    //     $formattedHash.each(function(key, $elm) {
-    //         $elm = $(elm);
-    //
-    //         $combinedHash
-    //     });
-    //
-    // } else {
-    //     $combinedHash = $combinedHash
-    //         .replace(/\'/g, "")
-    //         .replace(/\./g,"")	  //replace "." with nothing
-    //         .replace(/\s/g,"")	  //replace " " with ""
-    //         .replace(/\,/g,"&");	//replace "," with "&"
-    // }
 
     if($endHash == "*" || $endHash == "") {
         window.location.hash = "";

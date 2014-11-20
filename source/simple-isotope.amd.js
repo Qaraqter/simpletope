@@ -13,10 +13,12 @@ $.simpleIsotope.prototype = {
         _onHashChanged: require("./hash/_onHashChanged.js")
     },
     filter: {
-        _createButtons: require("./filter/_createButtons.js")
+        _createButtons: require("./filter/_createButtons.js"),
+        _check: require("./filter/_check.js")
     },
     sorter: {
-        _createButtons: require("./sorter/_createButtons.js")
+        _createButtons: require("./sorter/_createButtons.js"),
+        _check: require("./sorter/_check.js")
     },
     clear: {
         _createButtons: require("./clear/_createButtons.js"),
@@ -42,6 +44,9 @@ $.simpleIsotope.prototype = {
     * @param {string} $instance
     */
     _onIsotopeChange: function($instance) {
+        this.filter._check.call(this, $instance);
+        this.sorter._check.call(this, $instance);
+
         this.clear._check.call(this, $instance);
         this.text._feedback.call(this, $instance);
     },
@@ -94,6 +99,7 @@ $.simpleIsotope.prototype = {
     * @param {string} className
     * @param {boolean} multiple
     * @param {boolean} match
+    * @param {string} findDefault
     */
     _toggleClass: function($elm, $container, className, multiple, match, findDefault) {
         match = match || false;
@@ -165,35 +171,44 @@ $.simpleIsotope.prototype = {
     },
 
     _getFilterTest: function(filter) {
+        var $self = this;
 
-        if ( jQuery && this.options.isJQueryFiltering ) {
-            // use jQuery
-            return function( item ) {
+        return function( item ) {
 
-                if(filter.indexOf("data-") !== -1) {
-                    var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
-                    var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
+            var filters = filter.split(","),
+                active = [];
 
-                    cat = cat.map(Function.prototype.call, String.prototype.trim);
-                    value = value.map(Function.prototype.call, String.prototype.trim);
+            for (var i = 0, len = filters.length; i < len; i++) {
 
-                    // Notice: below is the jQuery filter function not the isotope function
-                    var active = value.filter(function( filter, index ) {
-                        return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
-                    });
+                if(filters[i].indexOf("data-") !== -1) {
 
-                    console.log(active, active.length, cat, cat.length);
+                    var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim();
+                    var value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
 
-                    return active.length == cat.length;
+                    if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
+                        active.push(value);
+                    }
 
                 } else {
-                    return jQuery( item.element ).is( filter );
+
+                    if( jQuery( item.element ).is( filters[i] ) ) {
+                        active.push(filters[i]);
+                    }
+
                 }
 
             }
+
+            if($self.filterMethod == "or") {
+                return active.length > 0;
+            } else {
+                return active.length == filters.length;
+            }
+
         }
 
     }
+
 };
 
 $.fn.simpleIsotope = require("./constructor/jquery.js")
@@ -204,43 +219,33 @@ $(document).ready(function() {
     })
 });
 
-
-/*Isotope.prototype._getFilterTest = function( filter ) {
-    if ( jQuery && this.options.isJQueryFiltering ) {
-        // use jQuery
-        return function( item ) {
-
-            if(filter.indexOf("data-") !== -1) {
-                var cat = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").split(",");
-                var value = filter.replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").split(",");
-
-                cat = cat.map(Function.prototype.call, String.prototype.trim);
-                value = value.map(Function.prototype.call, String.prototype.trim);
-
-                // Notice: below is the jQuery filter function not the isotope function
-                var active = value.filter(function( filter, index ) {
-                    return jQuery( item.element ).data( cat[index] ).indexOf( filter ) !== -1;
-                });
-
-                console.log(active, active.length, cat, cat.length);
-
-                return active.length == cat.length;
-
-            } else {
-                return jQuery( item.element ).is( filter );
-            }
-
-        };
+// Add bind support
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function(oThis) {
+    if (typeof this !== 'function') {
+      // closest thing possible to the ECMAScript 5
+      // internal IsCallable function
+      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
     }
-    if ( typeof filter === 'function' ) {
-        // use filter as function
-        return function( item ) {
-            return filter( item.element );
+
+    var aArgs   = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        fNOP    = function() {},
+        fBound  = function() {
+          return fToBind.apply(this instanceof fNOP && oThis
+                 ? this
+                 : oThis,
+                 aArgs.concat(Array.prototype.slice.call(arguments)));
         };
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+  };
+}
+if (!Function.prototype.trim) {
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g, '');
     }
-    // default, use filter as selector string
-    return function( item ) {
-        return matchesSelector( item.element, filter );
-    };
-};
-*/
+}

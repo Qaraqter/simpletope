@@ -1,12 +1,16 @@
 module.exports = function($args){
     $.extend(this, $args);
 
-    Isotope.prototype._getFilterTest = this._getFilterTest;
-
     var $self = this,
         theHash = this.hash._getHash.call(this);
 
+    this._getFilterTestOrginal = Isotope.prototype._getFilterTest;
+    Isotope.prototype._getFilterTest = this._getFilterTest.bind(this);
+
     this.guid = this.container.attr("id") || new Date().getTime();
+    this.filterMultiple = (this.container.attr(this.settings.dataSelectors.type).toLowerCase() == "multiple");
+    this.filterMethod = this.container.attr(this.settings.dataSelectors.filterMethod).toLowerCase();
+
     this.encodeURI = false;
 
     //First time init isotope
