@@ -185,8 +185,10 @@ $.simpleIsotope.prototype = {
                     var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim();
                     var value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
 
-                    if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
-                        active.push(value);
+                    if(jQuery( item.element ).data( cat ) !== undefined && jQuery( item.element ).data( cat ) !== null) {
+                        if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
+                            active.push(value);
+                        }
                     }
 
                 } else {
