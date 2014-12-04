@@ -1,34 +1,33 @@
 module.exports = function() {
-    var $clear = $('['+this.settings.dataSelectors.clearFilter+']'),
-        $dataForContainer = this.settings.dataSelectors.forContainer,
+    var $clearFilter = this.settings.dataSelectors.clearFilter,
         $defaultSort = this.settings.defaults.sort,
         $defaultFilter = this.settings.defaults.filter,
+        $instance = this.instances[this.guid],
         $self = this;
 
-    $clear.each(function(key, elm) {
-        var $elm = $(elm),
-            $isFor = $clear.attr($dataForContainer) || false,
-            $container = ($isFor === false) ? $self._getInstances() : $self._getElementsFromSelector($isFor);
+    $.each($instance.clearContainer, function(key, container) {
+        var $clearers = container;
 
-        $elm.hide().on('click', function(e) {
-            e.preventDefault();
+        $clearers.each(function(idx, elm) {
+            var $elm = $(elm);
 
-            $.each($container, function($key, $instance) {
+            $elm.hide().removeClass("hide").on('click', function(e) {
+                e.preventDefault();
 
                 if($self.useHash === true) {
-                    $self.hash._setHash.call($self, $instance, $defaultFilter);
+                    $self.hash._setHash.call($self, $instance.isotope, $defaultFilter);
                 } else {
-                    $instance.arrange({
+                    $instance.isotope.arrange({
                         filter: $defaultFilter,
                         sortBy: $defaultSort
                     });
 
                     $self._onIsotopeChange.call($self, $instance);
                 }
+
+                $elm.hide();
             });
 
-            $elm.hide();
         });
-
     });
 };

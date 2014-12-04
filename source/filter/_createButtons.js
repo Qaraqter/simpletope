@@ -4,46 +4,37 @@
 */
 
 module.exports = function() {
-
-    var $filters = $('['+this.settings.dataSelectors.filter+']'),//Get all filter elements
-        $dataFilter = this.settings.dataSelectors.filter,
-        $dataForContainer = this.settings.dataSelectors.forContainer,
+    var $dataFilter = this.settings.dataSelectors.filter,
+        $instance = this.instances[this.guid],
         $self = this;
 
-    $filters.each(function(idx, elm) {
-        elm = $(elm);
+    $.each($instance.filterContainer, function(key, container) {
+        var $filters = container.find('['+$dataFilter+']');
 
-        var $filterContainer =   elm.closest('['+$dataForContainer+']'), //Get parent with data-for-container
-            $container =         ($filterContainer.length == 0) ? $self._getInstances() : $self._getElementsFromSelector($filterContainer.attr($dataForContainer)),
-            $dataFilterAttr =    elm.attr($dataFilter),
-            filterContainerId =  ($filterContainer.attr("id") || new Date().getTime());
+        $filters.each(function(idx, elm) {
+            var $elm = $(elm);
 
-        if($self.instances[$self.guid].filterContainer[filterContainerId] == null) {
-            $self.instances[$self.guid].filterContainer[filterContainerId] = $filterContainer;
-        }
+            $elm.on('click', function(e) {
+                e.preventDefault();
 
-        elm.on('click', function(e) {
-            e.preventDefault();
-
-            var $filterValue = '',
-                val = $filterValue = $dataFilterAttr;
-
-            $.each($container, function(key, $instance) {
+                var $filterValue = '',
+                    $dataFilterAttr = $elm.attr($dataFilter),
+                    val = $filterValue = $dataFilterAttr;
 
                 if($self.useHash === true) {
-                    $self.hash._setHash.call($self, $instance, $filterValue);
+                    $self.hash._setHash.call($self, $instance.isotope, $filterValue);
                 } else {
 
                     if($self.filterMultiple) {
 
-                        if($instance.options.filter == "*" || $filterValue == "*") {
+                        if($instance.isotope.options.filter == "*" || $filterValue == "*") {
                             //Do nothing
-                        } else if($instance.options.filter.indexOf($filterValue) === -1) {
-                            $filterValue = $instance.options.filter.split(",");
+                        } else if($instance.isotope.options.filter.indexOf($filterValue) === -1) {
+                            $filterValue = $instance.isotope.options.filter.split(",");
                             $filterValue.push(val);
                             $filterValue = $filterValue.join(",");
                         } else {
-                            $filterValue = $instance.options.filter.split(",");
+                            $filterValue = $instance.isotope.options.filter.split(",");
                             $filterValue.splice($filterValue.indexOf(val), 1);
                             $filterValue = $filterValue.join(",");
                         }
@@ -53,7 +44,7 @@ module.exports = function() {
                         }
                     }
 
-                    $instance.arrange({
+                    $instance.isotope.arrange({
                         filter: $filterValue
                     });
 
@@ -63,7 +54,6 @@ module.exports = function() {
             });
 
         });
-
 
     });
 };

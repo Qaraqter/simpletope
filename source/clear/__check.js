@@ -3,5 +3,5 @@
 * @since 0.1.0
 */
 module.exports = function() {
-    this._onIsotopeChange.call(this, this.instances[this.guid].isotope);
+    this._onIsotopeChange.call(this, this.instances[this.guid]);
 };

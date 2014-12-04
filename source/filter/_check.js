@@ -2,23 +2,33 @@
  * _checkActive: Check if buttons need an active class
  * @since 0.1.0
  * @param {object} $instance
- * @param {string} $dataFilter
  */
 
-module.exports = function($instance, $dataFilter) {
+module.exports = function($instance) {
 
     var $dataFilter = this.settings.dataSelectors.filter,
         $defaultFilter = this.settings.defaults.filter,
+        $instance = $instance || this.instances[this.guid],
         $activeClass = this.settings.defaults.classNames.active;
 
-    $("["+$dataFilter+"]").removeClass($activeClass);
+    $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
 
-    $.each($instance.options.filter.split(","), function( index, filter ) {
-        var active = $("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+        $.each($instance.filterContainer, function( idx, container ) {
 
-        if(active.length > 0) {
-            $("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
-        }
+            if(index == 0) {
+                //Remove all active classes first time
+                container.find("["+$dataFilter+"]").removeClass($activeClass);
+            }
+
+            //Add active classes
+            var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+            // console.log("["+$dataFilter+"=\""+filter+"\"]", container.find("["+$dataFilter+"=\""+filter+"\"]"));
+
+            if(active.length > 0 && filter != $defaultFilter) {
+                container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+            }
+        });
+
     });
 
 };

@@ -8,8 +8,12 @@ module.exports = function($args){
     Isotope.prototype._getFilterTest = this._getFilterTest.bind(this);
 
     this.guid = this.container.attr("id") || new Date().getTime();
-    this.filterMultiple = (this.container.attr(this.settings.dataSelectors.type).toLowerCase() == "multiple");
-    this.filterMethod = this.container.attr(this.settings.dataSelectors.filterMethod).toLowerCase();
+
+    this.filterMultiple = this.container.attr(this.settings.dataSelectors.type) || "";
+    this.filterMultiple = (this.filterMultiple.toLowerCase() == "multiple");
+
+    this.filterMethod = this.container.attr(this.settings.dataSelectors.filterMethod) || "";
+    this.filterMethod = this.filterMethod.toLowerCase();
 
     this.encodeURI = false;
 
@@ -22,8 +26,12 @@ module.exports = function($args){
             getSortData: $self._getSortData()
         }),
         filterContainer: {},
-        sortContainer: {}
+        sortContainer: {},
+        clearContainer: {},
+        feedbackContainer: {}
     };
+
+    this._setContainers(this.instances[this.guid].isotope);
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {
         this.useHash = true;

@@ -5,35 +5,34 @@
 */
 
 module.exports = function($instance) {
-    var $clear = $('['+this.settings.dataSelectors.clearFilter+']'),
+
+    var $clearFilter = this.settings.dataSelectors.clearFilter,
         $defaultSort = this.settings.defaults.sort,
         $defaultFilter = this.settings.defaults.filter,
         $dataFilter = this.settings.dataSelectors.filter,
         $dataSortBy = this.settings.dataSelectors.sortBy,
         $activeClass = this.settings.defaults.classNames.active,
+        $instance = this.instances[this.guid],
         $self = this;
 
-    $clear.each(function(key, elm) {
-        var $elm = $(elm);
+    $.each($instance.clearContainer, function(key, container) {
+        var $clearers = container;
 
-        if($instance.options.filter != $defaultFilter) {
+        $clearers.each(function(idx, elm) {
+            var $elm = $(elm),
+                $history = $instance.isotope.sortHistory;
 
-            $elm.show();
+            if($instance.isotope.options.filter != $defaultFilter || $history[$history.length - 1] != $defaultSort) {
 
-        } else {
+                $elm.removeClass("hide").show();
 
-            $elm.hide();
+            } else {
 
-            var fn = function(idx, elm) {
-                elm.find('.'+$activeClass).removeClass($activeClass);
-                elm.find('['+$dataFilter+'="'+$defaultFilter+'"]').addClass($activeClass);
-                elm.find('['+$dataSortBy+'="'+$defaultSort+'"]').addClass($activeClass);
-            };
+                $elm.hide();
 
-            $.each($self.instances[$self.guid].filterContainer, fn);
-            $.each($self.instances[$self.guid].sortContainer, fn);
+            }
 
-        }
+        });
     });
 
 }

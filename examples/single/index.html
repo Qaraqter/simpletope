@@ -1,180 +1,195 @@
 <!DOCTYPE html>
 <html lang="nl">
 
-<head>
-    <meta charset="utf-8">
-    <title>simpleIsotope: Hash example: test </title>
-    <meta name="description" content="Blader door ons werk en bekijk welke opdrachten we gedaan hebben en voor welke klanten we werken">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <link href="../assets/css/example.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+        <title>simpleIsotope: Single example</title>
+        <meta name="description" content="Blader door ons werk en bekijk welke opdrachten we gedaan hebben en voor welke klanten we werken">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-</head>
+        <link href="../assets/css/example.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
 
-<body>
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
 
-    <header>
-        <nav id="menu" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                    <a id="logo" class="navbar-brand" href="#"> <em>Simple</em><span class="">Isotope</span> </a>
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="text-muted">Examples:</li>
-                        <li class=""> <a href="single/">Single</a> </li>
-                        <li class=""> <a href="multiple/">Multiple</a> </li>
-                        <li class="active"> <a href="hash/">Hash</a> </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    </head>
 
-    <div class="container">
-        <article>
-            <div class="row">
-                <div id="sorters" class="col-sm-4 col-md-3" data-for-container="results">
-                    <label>Sort by:</label>
-                    <select class="form-control">
-                        <option data-sort-by="original-order">Newest first</option>
-                        <option data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc">Oldest first</option>
-                        <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="asc">Category ascending</option>
-                        <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="desc">Category descending</option>
-                    </select>
-                </div>
-                <div id="sorts" class="col-sm-4 col-md-3" data-for-container="results">
-                    <label>Filter by category:</label>
-                    <div class="btn-group" style="display:block;">
-                        <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
-                        <button data-filter="[data-category='Arts']" class="btn btn-default"><i class="fa fa-paint-brush"></i></button>
-                        <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
-                        <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
+    <body>
+
+        <header>
+            <nav id="menu" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                        <a id="logo" class="navbar-brand" href="#"> <em>Simple</em><span class="">Isotope</span> </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="text-muted">Examples:</li>
+                            <li class="active"> <a href="../single/">Single</a> </li>
+                            <li class=""> <a href="../multiple/">Multiple</a> </li>
+                            <li class=""> <a href="../hash/">Hash</a> </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
+            </nav>
+        </header>
 
-            <div id="results" data-isotope>
-
-                <section class="item col-xs-12 col-sm-6 col-md-4 brown" data-date="20141020" data-category="Game, Arts, Science" data-colour="brown">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm8.staticflickr.com/7014/6653167541_fb28c001ed.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">ACME</h3>
-                            <p class="date">20-10-2014</p>
-                            <span class="category"><i class="fa fa-gamepad"></i></span>
+        <div class="container">
+            <article>
+                <div class="row">
+                    <div id="sorters" class="col-sm-4 col-md-3" data-for-container="results">
+                        <label>Sort by:</label>
+                        <select class="form-control">
+                            <option data-sort-by="original-order">Newest first</option>
+                            <option data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc">Oldest first</option>
+                            <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="asc">Category ascending</option>
+                            <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="desc">Category descending</option>
+                        </select>
+                    </div>
+                    <div id="sorts" class="col-sm-4 col-md-3" data-for-container="results">
+                        <label>Filter by category:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
+                            <button data-filter="[data-category='Arts']" class="btn btn-default"><i class="fa fa-paint-brush"></i></button>
+                            <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
+                            <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
                     </div>
-                </section>
-
-                <section class="item col-xs-12 col-sm-6 col-md-4 black" data-date="20141014" data-category="Science" data-colour="black">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm3.staticflickr.com/2155/1825459135_be6f60c9ef.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Astronauts</h3>
-                            <p class="date">14-10-2014</p>
-                            <span class="category"><i class="fa fa-flask"></i></span>
+                    <div id="sorts2" class="col-sm-4 col-md-6" data-for-container="results">
+                        <label>Filter by color:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-filter=".blue" class="btn btn-default">Blue</button>
+                            <button data-filter=".black" class="btn btn-default">Black</button>
+                            <button data-filter=".brown" class="btn btn-default">Brown</button>
                         </div>
+                        <div data-clear-filter class="close" data-for-container="results"><i class="fa fa-close"></i> Clear filters</div>
                     </div>
-                </section>
+                </div>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140808" data-category="Arts" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm2.staticflickr.com/1138/886174709_101a3fb077.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Invaders</h3>
-                            <p class="date">08-08-2014</p>
-                            <span class="category"><i class="fa fa-paint-brush"></i></span>
+                <div id="results" data-isotope data-filter-method="or">
+
+                    <section class="item col-xs-12 col-sm-6 col-md-4 brown" data-date="20141020" data-category="Game" data-colour="brown">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm8.staticflickr.com/7014/6653167541_fb28c001ed.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">ACME</h3>
+                                <p class="date">20-10-2014</p>
+                                <span class="category"><i class="fa fa-gamepad"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140806" data-category="Science" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm5.staticflickr.com/4103/4976543800_0632308f86.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">SpaceShip</h3>
-                            <p class="date">08-06-2014</p>
-                            <span class="category"><i class="fa fa-flask"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 black" data-date="20141014" data-category="Science" data-colour="black">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm3.staticflickr.com/2155/1825459135_be6f60c9ef.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Astronauts</h3>
+                                <p class="date">14-10-2014</p>
+                                <span class="category"><i class="fa fa-flask"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140801" data-category="Game" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm9.staticflickr.com/8054/8084593193_da65417ee2.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Space Marines</h3>
-                            <p class="date">08-01-2014</p>
-                            <span class="category"><i class="fa fa-gamepad"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140808" data-category="Arts" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm2.staticflickr.com/1138/886174709_101a3fb077.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Invaders</h3>
+                                <p class="date">08-08-2014</p>
+                                <span class="category"><i class="fa fa-paint-brush"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140725" data-category="Arts" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm2.staticflickr.com/1072/864379895_3c49a8d3d9.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">It's me! Mario!</h3>
-                            <p class="date">07-25-2014</p>
-                            <span class="category"><i class="fa fa-paint-brush"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140806" data-category="Science" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm5.staticflickr.com/4103/4976543800_0632308f86.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">SpaceShip</h3>
+                                <p class="date">08-06-2014</p>
+                                <span class="category"><i class="fa fa-flask"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140712" data-category="Game" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm1.staticflickr.com/118/303621330_15e8719059.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Enuf interwebs</h3>
-                            <p class="date">07-12-2014</p>
-                            <span class="category"><i class="fa fa-gamepad"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140801" data-category="Game" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm9.staticflickr.com/8054/8084593193_da65417ee2.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Space Marines</h3>
+                                <p class="date">08-01-2014</p>
+                                <span class="category"><i class="fa fa-gamepad"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140701" data-category="Science" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm9.staticflickr.com/8479/8212491631_5910e959f2.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Communications</h3>
-                            <p class="date">07-01-2014</p>
-                            <span class="category"><i class="fa fa-flask"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140725" data-category="Arts" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm2.staticflickr.com/1072/864379895_3c49a8d3d9.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">It's me! Mario!</h3>
+                                <p class="date">07-25-2014</p>
+                                <span class="category"><i class="fa fa-paint-brush"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140528" data-category="Science" data-colour="blue">
-                    <div class="thumbnail">
-                        <div class="visual"><img src="https://farm4.staticflickr.com/3464/3369387944_899307761f.jpg" alt=""></div>
-                        <div class="caption">
-                            <h3 class="title">Quarantine</h3>
-                            <p class="date">05-28-2014</p>
-                            <span class="category"><i class="fa fa-flask"></i></span>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140712" data-category="Game" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm1.staticflickr.com/118/303621330_15e8719059.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Enuf interwebs</h3>
+                                <p class="date">07-12-2014</p>
+                                <span class="category"><i class="fa fa-gamepad"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <div class="clear-fix"></div>
-            </div>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140701" data-category="Science" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm9.staticflickr.com/8479/8212491631_5910e959f2.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Communications</h3>
+                                <p class="date">07-01-2014</p>
+                                <span class="category"><i class="fa fa-flask"></i></span>
+                            </div>
+                        </div>
+                    </section>
 
-            <div class="feedback">
-                <div data-feedback="Showing {delta} items" data-for-container="results"></div>
-            </div>
+                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140528" data-category="Science" data-colour="blue">
+                        <div class="thumbnail">
+                            <div class="visual"><img src="https://farm4.staticflickr.com/3464/3369387944_899307761f.jpg" alt=""></div>
+                            <div class="caption">
+                                <h3 class="title">Quarantine</h3>
+                                <p class="date">05-28-2014</p>
+                                <span class="category"><i class="fa fa-flask"></i></span>
+                            </div>
+                        </div>
+                    </section>
 
-        </article>
-    </div>
+                    <div class="clear-fix"></div>
+                </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="../assets/js/isotope.pkgd.min.js"></script>
-    <script src="../assets/js/packery-mode.pkgd.js"></script>
-    <script src="../../build/simple-isotope.js"></script>
+                <div class="feedback">
+                    <div data-feedback="Showing {delta} items" data-for-container="results"></div>
+                </div>
 
-</body>
+            </article>
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script src="../assets/js/isotope.pkgd.min.js"></script>
+        <script src="../../build/simple-isotope.js"></script>
+
+    </body>
 
 </html>

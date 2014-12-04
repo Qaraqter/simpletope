@@ -26,7 +26,8 @@ label {
 .container > article {
     margin-top:100px;
 }
-#results {
+#results,
+#results2 {
     margin-top: 10px;
     border-radius:5px;
     padding: 0;
@@ -116,4 +117,29 @@ p.date {
 }
 article {
     margin-bottom:15px;
+}
+
+
+.random .item {
+    height: 120px;
+    position:relative;
+}
+.random .item.bigger {
+    height:240px;
+}
+.random .item span {
+    position: absolute;
+    top:5px;
+    right:5px;
+    left:5px;
+    bottom:5px;
+}
+.random .blue span {
+    background: #FEC301;
+}
+.random .brown span {
+    background: #FF5328;
+}
+.random .black span {
+    background: #1693A5;
 }

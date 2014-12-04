@@ -29,7 +29,46 @@ $.simpleIsotope.prototype = {
         _feedback: require("./text/_feedback.js")
     },
 
-    utils: require("./utils/index.js"),
+    /**
+    * _setContainers: Set the filters/sorters/clear containers to the right Isotope container
+    * @since 0.1.0
+    * @param {object} $instance
+    */
+    _setContainers: function($instance) {
+        var $self = this,
+            time = new Date().getTime(),
+            sh = $self.instances[$self.guid];
+
+        $.each( $('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]') , function( idx, elm ) {
+            var $elm = $(elm),
+                $filterContainer = $self._getElementFromDataAttribute($elm.closest('[data-for-container]').attr('data-for-container') || ""),
+                filterContainerId = ($filterContainer.attr("id") || time);
+
+            if($filterContainer !== false) {
+                if($filterContainer.is($instance.element)) {
+                    // console.log($elm, $filterContainer, $self.instances, filterContainerId);
+                }
+            }
+        });
+
+        $.each($('[data-for-container]'), function(idx, elm) {
+            var $elm = $(elm),
+                $filterContainer = $self._getElementFromDataAttribute($elm.attr('data-for-container')),
+                filterContainerId = ($elm.attr("id") || new Date().getTime());
+
+            if($filterContainer.is($instance.element)) {
+                if($elm.find("[data-filter]").length > 0) {
+                    sh.filterContainer[filterContainerId] = $elm;
+                } else if($elm.find("[data-sort-by]").length > 0) {
+                    sh.sortContainer[filterContainerId] = $elm;
+                } else if($elm.attr("data-clear-filter") !== undefined) {
+                    sh.clearContainer[filterContainerId] = $elm;
+                } else if($elm.attr("data-feedback") !== undefined) {
+                    sh.feedbackContainer[filterContainerId] = $elm;
+                }
+            }
+        });
+    },
 
     /**
     * _onBeforeIsotopeChange: fires before the Isotope layout has been changed
@@ -47,8 +86,8 @@ $.simpleIsotope.prototype = {
         this.filter._check.call(this, $instance);
         this.sorter._check.call(this, $instance);
 
-        this.clear._check.call(this, $instance);
-        this.text._feedback.call(this, $instance);
+        this.clear._check.call(this, $instance.isotope);
+        this.text._feedback.call(this, $instance.isotope);
     },
 
     /**
@@ -61,7 +100,7 @@ $.simpleIsotope.prototype = {
             filter: $selector
         });
 
-        this._onIsotopeChange(this.instances[this.guid].isotope);
+        this._onIsotopeChange(this.instances[this.guid]);
     },
 
     /**
@@ -92,38 +131,6 @@ $.simpleIsotope.prototype = {
     },
 
     /**
-    * _toggleClass: Helper to toggle or remove classes easier
-    * @since 0.1.0
-    * @param {element} $elm
-    * @param {element} $container
-    * @param {string} className
-    * @param {boolean} multiple
-    * @param {boolean} match
-    * @param {string} findDefault
-    */
-    _toggleClass: function($elm, $container, className, multiple, match, findDefault) {
-        match = match || false;
-        multiple = multiple || false;
-
-        if(multiple !== false) {
-
-            if(match) {
-                $container.find('.'+className).removeClass(className);
-                $elm.addClass(className);
-            } else {
-                $container.find(findDefault).removeClass(className);
-                $elm.toggleClass(className);
-            }
-
-        } else {
-            $container.find('.'+className).removeClass(className);
-            $elm.addClass(className);
-        }
-
-        return $elm.hasClass(className);
-    },
-
-    /**
     * _getInstances
     * @since 0.1.0
     */
@@ -137,11 +144,7 @@ $.simpleIsotope.prototype = {
         return tmp;
     },
 
-    /**
-    * _getElementsFromSelector
-    * @since 0.1.0
-    */
-    _getElementsFromSelector: function(selector) {
+    _getElementFromDataAttribute: function(selector) {
         var $tmp;
 
         if(selector.charAt(0) == "#" || selector.charAt(0) == ".") {				//this looks like a valid CSS selector
@@ -155,19 +158,11 @@ $.simpleIsotope.prototype = {
         }
 
         if($tmp.length == 0) {
-            console.error("simpleIsotope: We cannot find any DOM element with the CSS selector: " + selector);
+            // console.error("simpleIsotope: We cannot find any DOM element with the CSS selector: " + selector);
             return false;
         } else {
-            var $tmpArr = [];
-            $.each(this.instances, function(key, instance) {
-                if($(instance.isotope.element)[0] === $tmp[0]) {
-                    $tmpArr.push(instance.isotope);
-                }
-            });
-            return $tmpArr;
+            return $tmp;
         }
-
-        // return $tmp;
     },
 
     _getFilterTest: function(filter) {
