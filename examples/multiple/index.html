@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>simpleIsotope: Multiple example</title>
+        <meta name="description" content="Blader door ons werk en bekijk welke opdrachten we gedaan hebben en voor welke klanten we werken">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="../assets/css/example.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+
+        <header>
+            <nav id="menu" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                        <a id="logo" class="navbar-brand" href="#"> <em>Simple</em><span class="">Isotope</span> </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="text-muted">Examples:</li>
+                            <li class=""> <a href="../single/">Single</a> </li>
+                            <li class="active"> <a href="../multiple/">Multiple</a> </li>
+                            <li class=""> <a href="../hash/">Hash</a> </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+
+            <article class="col-sm-6">
+
+                <div class="row">
+
+                    <div id="sorts" class="col-sm-8" data-for-container="results">
+                        <label>Filter by category:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
+                            <button data-filter="[data-category='Arts']" class="btn btn-default"><i class="fa fa-paint-brush"></i></button>
+                            <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
+                            <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
+                        </div>
+                        <div data-clear-filter data-for-container="results" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
+                    </div>
+
+                    <div id="sorters" class="col-sm-4" data-for-container="results">
+                        <label>Sort by date:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-sort-by="original-order" class="btn btn-default active"><i class="fa fa-arrow-up"></i></button>
+                            <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc" class="btn btn-default"><i class="fa fa-arrow-down"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="results" class="random" data-isotope data-filter-method="or" data-layout="packery">
+
+                    <section class="item col-xs-6 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
+                    <section class="item col-xs-4 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
+                    <section class="item col-xs-2 blue" data-date="20140808" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 brown" data-date="20140806" data-category="Science" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-2 black" data-date="20140801" data-category="Game" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 blue bigger" data-date="20140725" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-2 brown" data-date="20140712" data-category="Game" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 black" data-date="20140701" data-category="Science" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 blue" data-date="20140528" data-category="Science" data-colour="blue"><span></span></section>
+
+                    <div class="clear-fix"></div>
+                </div>
+
+                <div class="feedback">
+                    <div data-feedback="Showing {delta} items" data-for-container="results"></div>
+                </div>
+
+            </article>
+
+            <article class="col-sm-6">
+
+                <div class="row">
+
+                    <div id="sorts2" class="col-sm-8" data-for-container="results2">
+                        <label>Filter by category:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
+                            <button data-filter="[data-category='Arts']" class="btn btn-default"><i class="fa fa-paint-brush"></i></button>
+                            <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
+                            <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
+                        </div>
+                        <div data-clear-filter data-for-container="results2" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
+                    </div>
+
+                    <div id="sorters2" class="col-sm-4" data-for-container="results2">
+                        <label>Sort by date:</label>
+                        <div class="btn-group" style="display:block;">
+                            <button data-sort-by="original-order" class="btn btn-default active"><i class="fa fa-arrow-up"></i></button>
+                            <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc" class="btn btn-default"><i class="fa fa-arrow-down"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="results2" class="random" data-isotope data-filter-method="or" data-layout="packery">
+
+                    <section class="item col-xs-2 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
+                    <section class="item col-xs-6 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
+                    <section class="item col-xs-4 blue" data-date="20140808" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 brown" data-date="20140806" data-category="Science" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-6 black" data-date="20140801" data-category="Game" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-2 blue bigger" data-date="20140725" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-2 brown" data-date="20140712" data-category="Game" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-6 black" data-date="20140701" data-category="Science" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 blue" data-date="20140528" data-category="Science" data-colour="blue"><span></span></section>
+
+                    <div class="clear-fix"></div>
+                </div>
+
+                <div class="feedback">
+                    <div data-feedback="Showing {delta} items" data-for-container="results2"></div>
+                </div>
+
+            </article>
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script src="../assets/js/isotope.pkgd.min.js"></script>
+        <script src="../assets/js/packery-mode.pkgd.js"></script>
+
+        <script src="../../build/simple-isotope.js"></script>
+
+    </body>
+
+</html>

@@ -37,6 +37,12 @@ module.exports = function($args){
         this.useHash = true;
     }
 
+    if(window.imagesLoaded !== undefined) {
+        this.container.imagesLoaded( function() {
+            $self.instances[$self.guid].isotope.layout();
+        });
+    }
+
     //Add hash support
     $(window).on('hashchange', this.hash._onHashChanged.bind(this));
 

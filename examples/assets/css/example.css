@@ -51,6 +51,9 @@ label {
     min-width: 100%;
     min-height: 100%;
 }
+.singleExample .visual {
+    height:auto;
+}
 h3.title {
     position: absolute;
     bottom: 10px;
