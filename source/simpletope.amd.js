@@ -13,15 +13,15 @@ $.simpleIsotope.prototype = {
         _onHashChanged: require("./hash/_onHashChanged.js")
     },
     filter: {
-        _createButtons: require("./filter/_createButtons.js"),
+        _createButtons: require("./filter/_createFilters.js"),
         _check: require("./filter/_check.js")
     },
     sorter: {
-        _createButtons: require("./sorter/_createButtons.js"),
+        _createButtons: require("./sorter/_createSorters.js"),
         _check: require("./sorter/_check.js")
     },
     clear: {
-        _createButtons: require("./clear/_createButtons.js"),
+        _createButtons: require("./clear/_createClearers.js"),
         _check: require("./clear/_check.js"),
         __check: require("./clear/__check.js")
     },
@@ -36,38 +36,73 @@ $.simpleIsotope.prototype = {
     */
     _setContainers: function($instance) {
         var $self = this,
-            time = new Date().getTime(),
             sh = $self.instances[$self.guid];
 
-        $.each( $('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]') , function( idx, elm ) {
+        $.each($('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]'), function(ind, elm) {
             var $elm = $(elm),
-                $filterContainer = $self._getElementFromDataAttribute($elm.closest('[data-for-container]').attr('data-for-container') || ""),
-                filterContainerId = ($filterContainer.attr("id") || time);
+                filterContainer = $self._createUniqueContainerId($elm);
 
-            if($filterContainer !== false) {
-                if($filterContainer.is($instance.element)) {
-                    // console.log($elm, $filterContainer, $self.instances, filterContainerId);
-                }
+            if( $elm.attr('data-filter') !== undefined ) {
+                sh.filterContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-sort-by') !== undefined ) {
+                sh.sortContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-clear-filter') !== undefined ) {
+                sh.clearContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-feedback') !== undefined ) {
+                sh.feedbackContainer[filterContainer.id] = $(filterContainer.elm);
             }
         });
+    },
 
-        $.each($('[data-for-container]'), function(idx, elm) {
-            var $elm = $(elm),
-                $filterContainer = $self._getElementFromDataAttribute($elm.attr('data-for-container')),
-                filterContainerId = ($elm.attr("id") || new Date().getTime());
+    /**
+    * _createUniqueContainerId: Get an id or fallback to a parent div
+    * @since 0.2.1
+    * @param {object} $elm
+    */
+    _createUniqueContainerId: function($elm) {
+        var tmpElm;
 
-            if($filterContainer.is($instance.element)) {
-                if($elm.find("[data-filter]").length > 0) {
-                    sh.filterContainer[filterContainerId] = $elm;
-                } else if($elm.find("[data-sort-by]").length > 0) {
-                    sh.sortContainer[filterContainerId] = $elm;
-                } else if($elm.attr("data-clear-filter") !== undefined) {
-                    sh.clearContainer[filterContainerId] = $elm;
-                } else if($elm.attr("data-feedback") !== undefined) {
-                    sh.feedbackContainer[filterContainerId] = $elm;
+        //Get the closest container with attribute data-for-container
+        var filterContainerId = $elm.closest('[data-for-container]');
+        if( filterContainerId.length > 0 ) {
+            tmpElm = filterContainerId[0];
+        } else {
+
+            //No parents with data attribute found, lets try something else
+            filterContainerId = $elm.prop("tagName").toLowerCase() == "option" ? $elm.parent('select') : $elm.parents('div[id]');
+            if( filterContainerId.length > 0 ) {
+                tmpElm = filterContainerId[0];
+            } else {
+
+                //No id or select parent found: lets just use the parent, evertything failed
+                filterContainerId = $elm.parent();
+                if( filterContainerId.length > 0 ) {
+                    tmpElm = filterContainerId[0];
+                } else {
+                    //Major fail; this shouldn't get called
+                    return {
+                        id: new Date().getTime(),
+                        elm: tmpElm
+                    };
                 }
+
             }
-        });
+
+        }
+
+        var formatted = $(tmpElm).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
+        if( formatted === "" ) {
+            return {
+                id: new Date().getTime(),
+                elm: tmpElm
+            };
+        }
+
+        return {
+            id: formatted,
+            elm: tmpElm
+        };
+
     },
 
     /**
@@ -122,7 +157,7 @@ $.simpleIsotope.prototype = {
                 if($name !== null && $selector !== null) {
                     $sortData[$name] = $selector;
                 } else {
-                    alert("Isotope sorting: "+$dataSortBy+" and "+$dataSortBySelector+" are required. Currently configured "+$dataSortBy+"='" + $name + "' and "+$dataSortBySelector+"='" + $selector + "'")
+                    alert("Isotope sorting: "+$dataSortBy+" and "+$dataSortBySelector+" are required. Currently configured "+$dataSortBy+"='" + $name + "' and "+$dataSortBySelector+"='" + $selector + "'");
                 }
             }
         });
@@ -135,7 +170,7 @@ $.simpleIsotope.prototype = {
     * @since 0.1.0
     */
     _getInstances: function() {
-        var tmp = []
+        var tmp = [];
 
         $.each(this.instances, function(key, elm) {
             tmp.push(elm.isotope);
@@ -144,10 +179,23 @@ $.simpleIsotope.prototype = {
         return tmp;
     },
 
+    /**
+    * _getElementFromDataAttribute
+    * @since 0.1.0
+    * @update 0.2.1
+    */
     _getElementFromDataAttribute: function(selector) {
         var $tmp;
 
-        if(selector.charAt(0) == "#" || selector.charAt(0) == ".") {				//this looks like a valid CSS selector
+        if(selector === "" || selector === false || selector === undefined) {
+            return false;
+        }
+
+        if(selector instanceof jQuery) {
+            return selector;
+        }
+
+        if(selector.charAt(0) === "#" || selector.charAt(0) === ".") {				//this looks like a valid CSS selector
             $tmp = $(selector);
         } else if(selector.indexOf("#") !== -1 || selector.indexOf(".") !== -1) {	//this looks like a valid CSS selector
             $tmp = $(selector);
@@ -157,8 +205,8 @@ $.simpleIsotope.prototype = {
             $tmp = $("#" + selector);
         }
 
-        if($tmp.length == 0) {
-            // console.error("simpleIsotope: We cannot find any DOM element with the CSS selector: " + selector);
+        if($tmp.length === 0) {
+            // throw new Error("simpletope: We cannot find any DOM element with the CSS selector: '" + selector + "'");
             return false;
         } else {
             return $tmp;
@@ -202,18 +250,18 @@ $.simpleIsotope.prototype = {
                 return active.length == filters.length;
             }
 
-        }
+        };
 
     }
 
 };
 
-$.fn.simpleIsotope = require("./constructor/jquery.js")
+$.fn.simpleIsotope = require("./constructor/jquery.js");
 
 $(document).ready(function() {
     $.each($("[data-isotope]"), function(key, elm) {
         $(elm).simpleIsotope();
-    })
+    });
 });
 
 // Add bind support
@@ -229,10 +277,7 @@ if (!Function.prototype.bind) {
         fToBind = this,
         fNOP    = function() {},
         fBound  = function() {
-          return fToBind.apply(this instanceof fNOP && oThis
-                 ? this
-                 : oThis,
-                 aArgs.concat(Array.prototype.slice.call(arguments)));
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
         };
 
     fNOP.prototype = this.prototype;
@@ -244,5 +289,5 @@ if (!Function.prototype.bind) {
 if (!Function.prototype.trim) {
     String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g, '');
-    }
+    };
 }

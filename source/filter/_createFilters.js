@@ -1,6 +1,7 @@
 /**
-* _createButtons and add events to it
+* _createFilters: create buttons and add events to it
 * @since 0.1.0
+* @updated 0.2.1
 */
 
 module.exports = function() {
@@ -12,22 +13,34 @@ module.exports = function() {
         var $filters = container.find('['+$dataFilter+']');
 
         $filters.each(function(idx, elm) {
-            var $elm = $(elm);
+            var $elm = $(elm),
+                how = {
+                    eventName: $elm.prop("tagName").toLowerCase() == "option" ? "change" : "click",
+                    element: $elm.prop("tagName").toLowerCase() == "option" ? $elm.closest("select") : $elm
+                };
 
-            $elm.on('click', function(e) {
+            how.element.on(how.eventName, function(e) {
                 e.preventDefault();
 
-                var $filterValue = '',
-                    $dataFilterAttr = $elm.attr($dataFilter),
-                    val = $filterValue = $dataFilterAttr;
+                if(how.eventName == "change") {
+                    if(how.element.find('option:selected')[0] != elm) {
+                        return false;
+                    }
+                }
+
+                var $dataFilterAttr = $elm.attr($dataFilter),
+                    $filterValue = $dataFilterAttr,
+                    val = $dataFilterAttr;
 
                 if($self.useHash === true) {
+
                     $self.hash._setHash.call($self, $instance.isotope, $filterValue);
+
                 } else {
 
                     if($self.filterMultiple) {
 
-                        if($instance.isotope.options.filter == "*" || $filterValue == "*") {
+                        if($instance.isotope.options.filter === "*" || $filterValue === "*") {
                             //Do nothing
                         } else if($instance.isotope.options.filter.indexOf($filterValue) === -1) {
                             $filterValue = $instance.isotope.options.filter.split(",");
@@ -39,7 +52,7 @@ module.exports = function() {
                             $filterValue = $filterValue.join(",");
                         }
 
-                        if($filterValue == "") {
+                        if($filterValue === "") {
                             $filterValue = "*";
                         }
                     }

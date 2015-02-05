@@ -15,17 +15,24 @@ module.exports = function($instance) {
 
         $.each($instance.filterContainer, function( idx, container ) {
 
-            if(index == 0) {
-                //Remove all active classes first time
-                container.find("["+$dataFilter+"]").removeClass($activeClass);
-            }
+            if(container.prop("tagName").toLowerCase() === "select") {
 
-            //Add active classes
-            var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
-            // console.log("["+$dataFilter+"=\""+filter+"\"]", container.find("["+$dataFilter+"=\""+filter+"\"]"));
+                container.find("["+$dataFilter+"=\""+filter+"\"]").attr('selected','selected');
 
-            if(active.length > 0 && filter != $defaultFilter) {
-                container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+            } else {
+
+                if(index === 0) {
+                    //Remove all active classes first time
+                    container.find("["+$dataFilter+"]").removeClass($activeClass);
+                }
+
+                //Add active classes
+                var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+
+                if(active.length > 0 && filter != $defaultFilter) {
+                    container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+                }
+
             }
         });
 
