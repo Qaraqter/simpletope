@@ -8,6 +8,8 @@
     1. [Advanced filtering](#advanced-filtering)
   1. [Sorting](#sorting)
     1. [Creating a sorter](#creating-a-sorter)
+    1. [Sorting selector](#sorting-selector)
+    1. [Sorting direction](#sorting-direction)
   1. [Multiple isotope instances](#multiple-isotope-instances)
     1. [Target a single Isotope instance](#target-a-single-isotope-instance)
   1. [Layout modes](#layout-modes)
@@ -75,7 +77,7 @@ When using multiple filters then by default the filters will apply the filter(s)
 
 ## Sorting
 ### Creating a sorter
-You can specify sorters by using the `data-sort-by` attribute on an element. By default this script will look for a class based on this name.
+You can specify sorting by using the `data-sort-by` attribute on an element. By default this script will look for a class based on this name.
 
 With the [Markup](#markup) above, we can set data-sort-by to `name`, `symbol`, `number`, `weight`, and `category`.
 
@@ -137,4 +139,4 @@ You can clear all applied filters with `data-clear-filter`, the element will be 
 ## Hash support
 You can enable hash support by adding `data-hash` to the container of your items. The hash will automatically update the URL with `http://path/#category=transition`
 
-    <div id="results" data-isotope data-hash>
+    <div id="container" data-isotope data-hash>
