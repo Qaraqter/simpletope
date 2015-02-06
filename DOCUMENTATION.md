@@ -13,7 +13,7 @@
   1. [Multiple isotope instances](#multiple-isotope-instances)
     1. [Target a single Isotope instance](#target-a-single-isotope-instance)
   1. [Layout modes](#layout-modes)
-  1. [Feeback](#feedback)
+  1. [Feedback](#feedback)
   1. [Clear filters](#clear-filters)
   1. [Hash support](#hash-support)
 
@@ -116,14 +116,14 @@ By default the filters will be applied to all Isotope instances created a page, 
 
 
 ## Layout modes
-You can speicify the layout mode by adding `data-layout` to the container of your items. This can be any valid isotope layout modes, by default we use `fitRows`. Keep in mind that you need to include the javascript file of the layout mode you want to use. (in this example you need to download and include masonry)
+You can specify the layout mode by adding `data-layout` to the container of your items. This can be any valid isotope layout modes, by default we use `fitRows`. Keep in mind that you need to include the javascript file of the layout mode you want to use. (in this example you need to download and include masonry)
 
     <div id="container" data-isotope data-layout="masonry">
         ...
     </div>
 
 ## Feedback
-You can specify a feedback line with the current numbers of items shown, you can use `data-feeback` with the attribute value as the text you want. You can use the placeholder `{delta}` to get the total items in a number.
+You can specify a feedback line with the current numbers of items shown, you can use `data-feedback` with the attribute value as the text you want. You can use the placeholder `{delta}` to get the total items in a number.
 
     <div class="feedback">
         <div data-feedback="Showing {delta} items" data-for-container="results"></div>

@@ -1,9 +1,16 @@
 # simpletope 0.2.1
 > No more scripting required to integrate isotope into your website! This plugin uses HTML5 attributes rather then JS codes. It also supports hashes so you can directly link to a filter.
 
-## Bower
+# Bower
 Install with Bower: ``bower install simpletope``
 
+# Documentation
+[See here for more info](https://github.com/Qaraqter/simpletope/blob/master/DOCUMENTATION.md)
+
+## Examples
+There are 3 examples found in `[examples/single](https://github.com/Qaraqter/simpletope/tree/master/examples/single)`, `[examples/multiple](https://github.com/Qaraqter/simpletope/tree/master/examples/multiple)` and `[examples/hash](https://github.com/Qaraqter/simpletope/tree/master/examples/hash)`.
+
+# Using this repo
 ## NodeJS
 
 ### NPM
@@ -40,9 +47,6 @@ npm run build-dev
 ```shell
 npm run build-main
 ```
-
-## Examples
-There are 3 examples found in `examples/single`, `examples/multiple` and `examples/hash`.
 
 ## SourceMap
 `Simpletop.dev.js` contains a sourcemap and is - beside the sourcemap - identical to `simpletope.js`
