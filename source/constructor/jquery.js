@@ -15,14 +15,14 @@ module.exports = function(){
                 itemSelector: '.item',
                 dataSelectors: {
                     filter: 'data-filter',
+                    type: 'data-filter-type',
+                    filterMethod: 'data-filter-method',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
                     sortDirection: 'data-sort-direction',
                     forContainer: 'data-for-container',
                     clearFilter: 'data-clear-filter',
-                    feedback: 'data-feedback',
-                    type: 'data-filter-type',
-                    filterMethod: 'data-filter-method'
+                    feedback: 'data-feedback'
                 },
                 defaults: {
                     filter: "*",

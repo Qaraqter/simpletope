@@ -6,11 +6,17 @@ Install with Bower: ``bower install simpletope``
 
 ## NodeJS
 
-### Getting Started
+### NPM
 If you haven't used [npm](https://www.npmjs.com/) before, be sure to check out the [Getting Started](https://docs.npmjs.com/getting-started/what-is-npm) guide, as it explains how to [install npm](https://docs.npmjs.com/getting-started/installing-node). Once you're familiar with that process, install the required plugins with this command in the root of your project:
 
 ```shell
 npm install
+```
+
+### Bower
+After installing the required NodeJS modules we also need to download dependecies from bower.
+```shell
+bower install
 ```
 
 ### Building
@@ -34,20 +40,6 @@ npm run build-dev
 ```shell
 npm run build-main
 ```
-
-## Table of Configs
-
-  1. [Filters](#filter)
-    1. [data-filter-by](#data-filter-by)
-  1. [Sorting](#sorting)
-    1. [data-sort-by](#data-sort-by)
-    1. [data-sort-by](#data-sort-by)
-
-## Filter
-### data-filter-by
-
-## Sorting
-
 
 ## Examples
 There are 3 examples found in `examples/single`, `examples/multiple` and `examples/hash`.
