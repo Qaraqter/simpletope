@@ -100,14 +100,14 @@ module.exports = function(){
                 itemSelector: '.item',
                 dataSelectors: {
                     filter: 'data-filter',
+                    type: 'data-filter-type',
+                    filterMethod: 'data-filter-method',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
                     sortDirection: 'data-sort-direction',
                     forContainer: 'data-for-container',
                     clearFilter: 'data-clear-filter',
-                    feedback: 'data-feedback',
-                    type: 'data-filter-type',
-                    filterMethod: 'data-filter-method'
+                    feedback: 'data-feedback'
                 },
                 defaults: {
                     filter: "*",
@@ -203,16 +203,24 @@ module.exports = function($instance) {
 
         $.each($instance.filterContainer, function( idx, container ) {
 
-            if(index === 0) {
-                //Remove all active classes first time
-                container.find("["+$dataFilter+"]").removeClass($activeClass);
-            }
+            if(container.prop("tagName").toLowerCase() === "select") {
 
-            //Add active classes
-            var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+                container.find("["+$dataFilter+"=\""+filter+"\"]").attr('selected','selected');
 
-            if(active.length > 0 && filter != $defaultFilter) {
-                container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+            } else {
+
+                if(index === 0) {
+                    //Remove all active classes first time
+                    container.find("["+$dataFilter+"]").removeClass($activeClass);
+                }
+
+                //Add active classes
+                var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+
+                if(active.length > 0 && filter != $defaultFilter) {
+                    container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+                }
+
             }
         });
 
@@ -224,6 +232,7 @@ module.exports = function($instance) {
 /**
 * _createFilters: create buttons and add events to it
 * @since 0.1.0
+* @updated 0.2.1
 */
 
 module.exports = function() {
@@ -233,7 +242,6 @@ module.exports = function() {
 
     $.each($instance.filterContainer, function(key, container) {
         var $filters = container.find('['+$dataFilter+']');
-        console.log(container);
 
         $filters.each(function(idx, elm) {
             var $elm = $(elm),
@@ -474,29 +482,73 @@ $.simpleIsotope.prototype = {
     */
     _setContainers: function($instance) {
         var $self = this,
-            time = new Date().getTime(),
             sh = $self.instances[$self.guid];
 
-        console.log($('data-filter'));
-
-/*        $.each($('[data-for-container]'), function(idx, elm) {
+        $.each($('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]'), function(ind, elm) {
             var $elm = $(elm),
-                $filterContainer = $self._getElementFromDataAttribute($elm.attr('data-for-container') || false),
-                filterContainerId = ($elm !== false) ? ($elm.attr("id") || time) : time;
+                filterContainer = $self._createUniqueContainerId($elm);
 
-            console.log($filterContainer);
-            if($filterContainer.is($instance.element)) {
-                if($elm.find("[data-filter]").length > 0) {
-                    sh.filterContainer[filterContainerId] = $elm;
-                } else if($elm.find("[data-sort-by]").length > 0) {
-                    sh.sortContainer[filterContainerId] = $elm;
-                } else if($elm.attr("data-clear-filter") !== undefined) {
-                    sh.clearContainer[filterContainerId] = $elm;
-                } else if($elm.attr("data-feedback") !== undefined) {
-                    sh.feedbackContainer[filterContainerId] = $elm;
-                }
+            if( $elm.attr('data-filter') !== undefined ) {
+                sh.filterContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-sort-by') !== undefined ) {
+                sh.sortContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-clear-filter') !== undefined ) {
+                sh.clearContainer[filterContainer.id] = $(filterContainer.elm);
+            } else if ( $elm.attr('data-feedback') !== undefined ) {
+                sh.feedbackContainer[filterContainer.id] = $(filterContainer.elm);
             }
-        });*/
+        });
+    },
+
+    /**
+    * _createUniqueContainerId: Get an id or fallback to a parent div
+    * @since 0.2.1
+    * @param {object} $elm
+    */
+    _createUniqueContainerId: function($elm) {
+        var tmpElm;
+
+        //Get the closest container with attribute data-for-container
+        var filterContainerId = $elm.closest('[data-for-container]');
+        if( filterContainerId.length > 0 ) {
+            tmpElm = filterContainerId[0];
+        } else {
+
+            //No parents with data attribute found, lets try something else
+            filterContainerId = $elm.prop("tagName").toLowerCase() == "option" ? $elm.parent('select') : $elm.parents('div[id]');
+            if( filterContainerId.length > 0 ) {
+                tmpElm = filterContainerId[0];
+            } else {
+
+                //No id or select parent found: lets just use the parent, evertything failed
+                filterContainerId = $elm.parent();
+                if( filterContainerId.length > 0 ) {
+                    tmpElm = filterContainerId[0];
+                } else {
+                    //Major fail; this shouldn't get called
+                    return {
+                        id: new Date().getTime(),
+                        elm: tmpElm
+                    };
+                }
+
+            }
+
+        }
+
+        var formatted = $(tmpElm).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
+        if( formatted === "" ) {
+            return {
+                id: new Date().getTime(),
+                elm: tmpElm
+            };
+        }
+
+        return {
+            id: formatted,
+            elm: tmpElm
+        };
+
     },
 
     /**
@@ -574,15 +626,19 @@ $.simpleIsotope.prototype = {
     },
 
     /**
-    * _getAttribute
+    * _getElementFromDataAttribute
     * @since 0.1.0
     * @update 0.2.1
     */
     _getElementFromDataAttribute: function(selector) {
         var $tmp;
 
-        if(selector === "" || selector === false) {
+        if(selector === "" || selector === false || selector === undefined) {
             return false;
+        }
+
+        if(selector instanceof jQuery) {
+            return selector;
         }
 
         if(selector.charAt(0) === "#" || selector.charAt(0) === ".") {				//this looks like a valid CSS selector
@@ -758,12 +814,12 @@ module.exports = function() {
                         if($sortArray.indexOf($dataSortAttr) === -1) {
                             $sortArray.push($dataSortAttr);
                         } else {
-                            $sortArray.splice($sortArray.indexOf($dataSortAttr), 1)
+                            $sortArray.splice($sortArray.indexOf($dataSortAttr), 1);
                         }
 
                     }
 
-                    if($sortArray.length == 0) {
+                    if($sortArray.length === 0) {
                         $sortByValue = $defaultSort;
                     } else {
                         $sortByValue = $sortArray;
@@ -795,112 +851,10 @@ module.exports = function() {
         });
     });
 
-
-    // var $sorters = $('['+this.settings.dataSelectors.sortBy+']'),//Get all sort elements
-    //     $dataSortBy = this.settings.dataSelectors.sortBy,
-    //     $dataForContainer = this.settings.dataSelectors.forContainer,
-    //     $dataSortDirection = this.settings.dataSelectors.sortDirection,
-    //     $defaultSort = this.settings.defaults.sort,
-    //     $sortArray = [],
-    //     $self = this;
-    //
-    // $sorters.each(function(idx, elm) {
-    //     var $elm = $(elm);
-    //
-    //     var $sortContainer =   $elm.closest('['+$dataForContainer+']'),
-    //         $container =       ($sortContainer.length == 0) ? $self._getInstances() : $self._getElementsFromSelector($sortContainer.attr($dataForContainer)),
-    //         $dataSortAttr =    $elm.attr($dataSortBy),
-    //         sortContainerId =  ($sortContainer.attr("id") || new Date().getTime());
-    //
-    //     if($self.instances[$self.guid].sortContainer[sortContainerId] == null) {
-    //         $self.instances[$self.guid].sortContainer[sortContainerId] = $sortContainer;
-    //     }
-    //
-    //     var how = {
-    //         eventName: $elm.prop("tagName").toLowerCase() == "option" ? "change" : "click",
-    //         element: $elm.prop("tagName").toLowerCase() == "option" ? $elm.closest("select") : $elm
-    //     };
-    //
-    //     if(how.element.data("is-set") != "true") {
-    //
-    //         how.element.on(how.eventName, function(e) {
-    //             e.preventDefault();
-    //
-    //             if(how.eventName == "change") {
-    //                 if(how.element.find('option:selected')[0] != elm) {
-    //                     return false;
-    //                 }
-    //             }
-    //
-    //             var $sortByValue = '';
-    //             if($self.filterMultiple !== false) {
-    //
-    //                 $sortByValue = [];
-    //
-    //                 if($dataSortAttr == $defaultSort) {
-    //                     $sortArray = [];
-    //                 } else {
-    //                     if($sortArray.indexOf($dataSortAttr) === -1) {
-    //                         $sortArray.push($dataSortAttr);
-    //                     } else {
-    //                         $sortArray.splice($sortArray.indexOf($dataSortAttr), 1)
-    //                     }
-    //
-    //                 }
-    //
-    //                 if($sortArray.length == 0) {
-    //                     $sortByValue = $defaultSort;
-    //                 } else {
-    //                     $sortByValue = $sortArray;
-    //                 }
-    //
-    //             } else {
-    //                 $sortByValue = $dataSortAttr;
-    //             }
-    //
-    //             $.each($container, function(key, container) {
-    //                 var $sortAsc = false;
-    //
-    //                 if($elm.attr($dataSortDirection) !== null && $elm.attr($dataSortDirection) !== undefined) {
-    //                     if($elm.attr($dataSortDirection).toLowerCase() == "asc") {
-    //                         $sortAsc = true;
-    //                     }
-    //                 }
-    //                 if($elm.attr($dataSortBy) == $defaultSort) {
-    //                     $sortAsc = true;
-    //                 }
-    //
-    //                 container.arrange({
-    //                     sortBy: $sortByValue,
-    //                     sortAscending: $sortAsc
-    //                 });
-    //
-    //                 $self._onIsotopeChange.call($self, container);
-    //
-    //             });
-    //         }).data("is-set", "true");
-    //     }
-    //
-    // });
 };
 
 },{}],15:[function(require,module,exports){
 module.exports = function() {
-//     var $feedback = $('['+this.settings.dataSelectors.feedback+']'),
-//         $dataForContainer = this.settings.dataSelectors.forContainer,
-//         $self = this;
-//
-//     $feedback.each(function(key, elm) {
-//         var $elm = $(elm),
-//             $isFor = $elm.attr($dataForContainer) || false,
-//             $container = ($isFor === false) ? $self._getInstances() : $self._getElementsFromSelector($isFor);
-//
-//         $.each($container, function($key, $instance) {
-//             $elm.text($elm.attr("data-feedback").replace("{delta}", $instance.filteredItems.length));
-//         });
-//
-//     });
-
     var $instance = this.instances[this.guid],
         $self = this;
 
