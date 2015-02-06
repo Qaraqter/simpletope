@@ -13,6 +13,7 @@
   1. [Layout modes](#layout-modes)
   1. [Feeback](#feedback)
   1. [Clear filters](#clear-filters)
+  1. [Hash support](#hash-support)
 
 ## Markup
 All the data used for filter and sorting are kept in the markup. It could be a text value, like a title or tag. Or it could be a number, like a price, measurement, or rating.
@@ -46,10 +47,10 @@ In order to trigger simpletope you need to specify `data-isotope` without a valu
 ### Creating a filter
 You can specify filters by using the `data-filter` attribute on an element. The value of this attribute should be a valid CSS selector of the element you want to filter.
 
-###Filter on class:
+#### Filter on class:
     <button data-filter=".metal">Metal</button>
 
-### Filter on attribute value:
+#### Filter on attribute value:
     <button data-filter="[data-category='transition']">Transition</button>
 
 ### Reset filters
@@ -65,7 +66,7 @@ By default the filters will only apply one filter. if you would like to have mul
     </div>
 
 ### Advanced filtering
-By default the filters will apply the filter(s) with the `or` statement, this means `blue` or `red` will be filtered, if you would like to filter on `blue` and `red` then you can specify t `data-filter-method` on the container of your items.
+When using multiple filters then by default the filters will apply the filter(s) with the `or` statement, this means `blue` or `red` will be filtered, if you would like to filter on `blue` and `red` then you can specify the `data-filter-method` on the container of your items.
 
     <div id="container" data-isotope data-filter-method="and">
         ...
@@ -120,7 +121,7 @@ You can speicify the layout mode by adding `data-layout` to the container of you
     </div>
 
 ## Feedback
-You can specify a feedback line with the current numbers of items shown, you can use `data-feeback` with the as value the text you want. You can use `{delta}` to get the total items.
+You can specify a feedback line with the current numbers of items shown, you can use `data-feeback` with the attribute value as the text you want. You can use the placeholder `{delta}` to get the total items in a number.
 
     <div class="feedback">
         <div data-feedback="Showing {delta} items" data-for-container="results"></div>
@@ -132,3 +133,8 @@ The above example would generate: `Showing 9 items`
 You can clear all applied filters with `data-clear-filter`, the element will be hidden until a filter has been applied.
 
     <div data-clear-filter class="close"><i class="fa fa-close"></i> Clear filters</div>
+
+## Hash support
+You can enable hash support by adding `data-hash` to the container of your items. The hash will automatically update the URL with `http://path/#category=transition`
+
+    <div id="results" data-isotope data-hash>
