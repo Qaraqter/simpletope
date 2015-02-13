@@ -26,26 +26,21 @@ module.exports = function($instance) {
         $self = this;
 
     $.each($instance.clearContainer, function(key, container) {
-        var $clearers = container;
 
-        $clearers.each(function(idx, elm) {
+        container.each(function(idx, elm) {
             var $elm = $(elm),
                 $history = $instance.isotope.sortHistory;
 
             if($instance.isotope.options.filter != $defaultFilter || $history[$history.length - 1] != $defaultSort) {
-
                 $elm.removeClass("hide").show();
-
             } else {
-
                 $elm.hide();
-
             }
 
         });
     });
 
-}
+};
 
 },{}],3:[function(require,module,exports){
 module.exports = function() {
@@ -89,7 +84,7 @@ module.exports = function(){
         instances = [];
 
     if(typeof window.Isotope != "function") {
-        alert("simpleIsotope: Isotope.JS couldn't be found. Please include 'isotope.pkgd.min.js'.")
+        alert("simpleIsotope: Isotope.JS couldn't be found. Please include 'isotope.js'.")
         return;
     }
 
@@ -142,7 +137,7 @@ module.exports = function($args){
         theHash = this.hash._getHash.call(this);
 
     this._getFilterTestOrginal = Isotope.prototype._getFilterTest;
-    Isotope.prototype._getFilterTest = this._getFilterTest.bind(this);
+    Isotope.prototype._getFilterTest = this.utils._getFilterTest.bind(this);
 
     this.guid = this.container.attr("id") || new Date().getTime();
 
@@ -160,7 +155,7 @@ module.exports = function($args){
             filter: theHash || "*",
             itemSelector: $self.settings.itemSelector || '.item',
             layoutMode: $self.container.data("layout") || "fitRows",
-            getSortData: $self._getSortData()
+            getSortData: $self.utils._getSortData.call(this)
         }),
         filterContainer: {},
         sortContainer: {},
@@ -168,7 +163,7 @@ module.exports = function($args){
         feedbackContainer: {}
     };
 
-    this._setContainers(this.instances[this.guid].isotope);
+    this.utils._setContainers.call(this, this.instances[this.guid].isotope);
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {
         this.useHash = true;
@@ -202,10 +197,11 @@ module.exports = function($instance) {
     $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
 
         $.each($instance.filterContainer, function( idx, container ) {
+            var elm = container.find("["+$dataFilter+"=\""+filter+"\"]");
 
-            if(container.prop("tagName").toLowerCase() === "select") {
+            if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
 
-                container.find("["+$dataFilter+"=\""+filter+"\"]").attr('selected','selected');
+                elm.attr('selected','selected');
 
             } else {
 
@@ -215,7 +211,7 @@ module.exports = function($instance) {
                 }
 
                 //Add active classes
-                var active = container.find("["+$dataFilter+"=\""+filter+"\"]").addClass($activeClass);
+                var active = elm.addClass($activeClass);
 
                 if(active.length > 0 && filter != $defaultFilter) {
                     container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
@@ -313,7 +309,7 @@ module.exports = function(re, str) {
     var matches = {},
         match;
 
-    while ((match = re.exec(str)) != null) {
+    while ((match = re.exec(str)) !== null) {
         if (match.index === re.lastIndex) {
             re.lastIndex++;
         }
@@ -324,7 +320,7 @@ module.exports = function(re, str) {
 
         } else {
 
-            if(matches[match[1]] == null || matches[match[1]] == undefined) {
+            if(matches[match[1]] === null || matches[match[1]] === undefined) {
                 matches[match[1]] = [];
             }
             matches[match[1]].push(match[2]);
@@ -346,7 +342,7 @@ module.exports = function(re, str) {
     var $hash = window.location.hash || false,
         $newHash = "";
 
-    $hash = ($hash !== false && $hash != "#" && $hash != "") ? decodeURIComponent(window.location.hash) : '*';
+    $hash = ($hash !== false && $hash !== "#" && $hash !== "") ? decodeURIComponent(window.location.hash) : '*';
 
     //Remove hash from first character if its exist
     if ($hash.charAt(0) === '#') {
@@ -359,18 +355,16 @@ module.exports = function(re, str) {
         if($partHash.indexOf("=") !== -1) {
 
             var tmp = $partHash.split("="),
-                arr = [];
+                arr = [], values, name;
 
             if(tmp.length > 1) {
-                var name = tmp[0],
-                    values = tmp[1].replace(/\'/g, "");
+                name = tmp[0];
+                values = tmp[1].replace(/\'/g, "");
             }
 
             values = values.split(",");
             for (var i=0; i<values.length; i++) {
                 arr.push("[data-" + name + "='" + values[i] + "']");
-
-                // $("[data-filter=\"[data-" + name + "='" + values[i] + "']\"]").addClass($self.settings.defaults.classNames.active);
             }
 
             $newHash += arr.join(",");
@@ -408,7 +402,8 @@ module.exports = function() {
 
 module.exports = function($instance, $newHash) {
     var $currentHash = ($instance.options.filter == "*") ? "" : $instance.options.filter,
-        $combinedHash;
+        $combinedHash,
+        $endHash = [];
 
     if($newHash != "*") {
 
@@ -418,8 +413,7 @@ module.exports = function($instance, $newHash) {
             $combinedHash = $currentHash.replace($newHash, "");
         }
 
-        var $formattedHash = this.hash._formatHash(/\[data\-(.+?)\=\'(.+?)\'\]|(.[A-Za-z0-9]+)/g, $combinedHash),
-            $endHash = [];
+        var $formattedHash = this.hash._formatHash(/\[data\-(.+?)\=\'(.+?)\'\]|(.[A-Za-z0-9]+)/g, $combinedHash);
 
         $.each($formattedHash, function(key, elm) {
             if(elm === true) {//isClass
@@ -434,7 +428,7 @@ module.exports = function($instance, $newHash) {
         $endHash = $newHash;
     }
 
-    if($endHash == "*" || $endHash == "") {
+    if($endHash === "*" || $endHash === "") {
         window.location.hash = "";
     } else {
         window.location.hash = (this.encodeURI === true) ? encodeURIComponent($endHash) : $endHash;
@@ -474,81 +468,13 @@ $.simpleIsotope.prototype = {
     text: {
         _feedback: require("./text/_feedback.js")
     },
-
-    /**
-    * _setContainers: Set the filters/sorters/clear containers to the right Isotope container
-    * @since 0.1.0
-    * @param {object} $instance
-    */
-    _setContainers: function($instance) {
-        var $self = this,
-            sh = $self.instances[$self.guid];
-
-        $.each($('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]'), function(ind, elm) {
-            var $elm = $(elm),
-                filterContainer = $self._createUniqueContainerId($elm);
-
-            if( $elm.attr('data-filter') !== undefined ) {
-                sh.filterContainer[filterContainer.id] = $(filterContainer.elm);
-            } else if ( $elm.attr('data-sort-by') !== undefined ) {
-                sh.sortContainer[filterContainer.id] = $(filterContainer.elm);
-            } else if ( $elm.attr('data-clear-filter') !== undefined ) {
-                sh.clearContainer[filterContainer.id] = $(filterContainer.elm);
-            } else if ( $elm.attr('data-feedback') !== undefined ) {
-                sh.feedbackContainer[filterContainer.id] = $(filterContainer.elm);
-            }
-        });
-    },
-
-    /**
-    * _createUniqueContainerId: Get an id or fallback to a parent div
-    * @since 0.2.1
-    * @param {object} $elm
-    */
-    _createUniqueContainerId: function($elm) {
-        var tmpElm;
-
-        //Get the closest container with attribute data-for-container
-        var filterContainerId = $elm.closest('[data-for-container]');
-        if( filterContainerId.length > 0 ) {
-            tmpElm = filterContainerId[0];
-        } else {
-
-            //No parents with data attribute found, lets try something else
-            filterContainerId = $elm.prop("tagName").toLowerCase() == "option" ? $elm.parent('select') : $elm.parents('div[id]');
-            if( filterContainerId.length > 0 ) {
-                tmpElm = filterContainerId[0];
-            } else {
-
-                //No id or select parent found: lets just use the parent, evertything failed
-                filterContainerId = $elm.parent();
-                if( filterContainerId.length > 0 ) {
-                    tmpElm = filterContainerId[0];
-                } else {
-                    //Major fail; this shouldn't get called
-                    return {
-                        id: new Date().getTime(),
-                        elm: tmpElm
-                    };
-                }
-
-            }
-
-        }
-
-        var formatted = $(tmpElm).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
-        if( formatted === "" ) {
-            return {
-                id: new Date().getTime(),
-                elm: tmpElm
-            };
-        }
-
-        return {
-            id: formatted,
-            elm: tmpElm
-        };
-
+    utils: {
+        _setContainers: require("./utils/_setContainers.js"),
+        _getForContainerAndId: require("./utils/_getForContainerAndId.js"),
+        _getSortData: require("./utils/_getSortData.js"),
+        _getElementFromDataAttribute: require("./utils/_getElementFromDataAttribute.js"),
+        _getFilterTest: require("./utils/_getFilterTest.js"),
+        _getInstances: require("./utils/_getInstances.js")
     },
 
     /**
@@ -582,122 +508,6 @@ $.simpleIsotope.prototype = {
         });
 
         this._onIsotopeChange(this.instances[this.guid]);
-    },
-
-    /**
-     * _getSortData: Get the data-sort-by attributes and make them into an Isotope "getSortData" object
-     * @since 0.1.0
-     */
-    _getSortData: function() {
-        var $sortData = {},
-            $dataSortBy = this.settings.dataSelectors.sortBy,
-            $dataSortBySelector = this.settings.dataSelectors.sortBySelector,
-            $dataSortByDefault = this.settings.defaults.sort;
-
-        $('[' + $dataSortBy + '], [' + $dataSortBySelector + ']').each(function(idx, elm) {
-            var $elm = $(elm),
-                $name = $elm.attr($dataSortBy) || null,
-                $selector = $elm.attr($dataSortBySelector) || null;
-
-            if($name != $dataSortByDefault) {
-                if($name !== null && $selector !== null) {
-                    $sortData[$name] = $selector;
-                } else {
-                    alert("Isotope sorting: "+$dataSortBy+" and "+$dataSortBySelector+" are required. Currently configured "+$dataSortBy+"='" + $name + "' and "+$dataSortBySelector+"='" + $selector + "'");
-                }
-            }
-        });
-
-        return $sortData;
-    },
-
-    /**
-    * _getInstances
-    * @since 0.1.0
-    */
-    _getInstances: function() {
-        var tmp = [];
-
-        $.each(this.instances, function(key, elm) {
-            tmp.push(elm.isotope);
-        });
-
-        return tmp;
-    },
-
-    /**
-    * _getElementFromDataAttribute
-    * @since 0.1.0
-    * @update 0.2.1
-    */
-    _getElementFromDataAttribute: function(selector) {
-        var $tmp;
-
-        if(selector === "" || selector === false || selector === undefined) {
-            return false;
-        }
-
-        if(selector instanceof jQuery) {
-            return selector;
-        }
-
-        if(selector.charAt(0) === "#" || selector.charAt(0) === ".") {				//this looks like a valid CSS selector
-            $tmp = $(selector);
-        } else if(selector.indexOf("#") !== -1 || selector.indexOf(".") !== -1) {	//this looks like a valid CSS selector
-            $tmp = $(selector);
-        } else if(selector.indexOf(" ") !== -1) {									//this looks like a valid CSS selector
-            $tmp = $(selector);
-        } else {																	//evulate the string as an id
-            $tmp = $("#" + selector);
-        }
-
-        if($tmp.length === 0) {
-            // throw new Error("simpletope: We cannot find any DOM element with the CSS selector: '" + selector + "'");
-            return false;
-        } else {
-            return $tmp;
-        }
-    },
-
-    _getFilterTest: function(filter) {
-        var $self = this;
-
-        return function( item ) {
-
-            var filters = filter.split(","),
-                active = [];
-
-            for (var i = 0, len = filters.length; i < len; i++) {
-
-                if(filters[i].indexOf("data-") !== -1) {
-
-                    var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim();
-                    var value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
-
-                    if(jQuery( item.element ).data( cat ) !== undefined && jQuery( item.element ).data( cat ) !== null) {
-                        if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
-                            active.push(value);
-                        }
-                    }
-
-                } else {
-
-                    if( jQuery( item.element ).is( filters[i] ) ) {
-                        active.push(filters[i]);
-                    }
-
-                }
-
-            }
-
-            if($self.filterMethod == "or") {
-                return active.length > 0;
-            } else {
-                return active.length == filters.length;
-            }
-
-        };
-
     }
 
 };
@@ -738,7 +548,7 @@ if (!Function.prototype.trim) {
     };
 }
 
-},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_createClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./filter/_check.js":6,"./filter/_createFilters.js":7,"./hash/_formatHash.js":8,"./hash/_getHash.js":9,"./hash/_onHashChanged.js":10,"./hash/_setHash.js":11,"./sorter/_check.js":13,"./sorter/_createSorters.js":14,"./text/_feedback.js":15}],13:[function(require,module,exports){
+},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_createClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./filter/_check.js":6,"./filter/_createFilters.js":7,"./hash/_formatHash.js":8,"./hash/_getHash.js":9,"./hash/_onHashChanged.js":10,"./hash/_setHash.js":11,"./sorter/_check.js":13,"./sorter/_createSorters.js":14,"./text/_feedback.js":15,"./utils/_getElementFromDataAttribute.js":16,"./utils/_getFilterTest.js":17,"./utils/_getForContainerAndId.js":18,"./utils/_getInstances.js":19,"./utils/_getSortData.js":20,"./utils/_setContainers.js":21}],13:[function(require,module,exports){
 /**
  * _checkActive: Check if buttons need an active class
  * @since 0.1.0
@@ -865,6 +675,199 @@ module.exports = function() {
             var $elm = $(elm);
             $elm.text($elm.attr("data-feedback").replace("{delta}", $instance.isotope.filteredItems.length));
         });
+    });
+};
+
+},{}],16:[function(require,module,exports){
+/**
+* _getElementFromDataAttribute
+* @since 0.1.0
+* @update 0.2.1
+*/
+module.exports = function(selector) {
+    var $tmp;
+
+    if(selector === "" || selector === false || selector === undefined) {
+        return false;
+    }
+
+    if(selector instanceof jQuery) {
+        return selector;
+    }
+
+    if(selector.charAt(0) === "#" || selector.charAt(0) === ".") {				//this looks like a valid CSS selector
+        $tmp = $(selector);
+    } else if(selector.indexOf("#") !== -1 || selector.indexOf(".") !== -1) {	//this looks like a valid CSS selector
+        $tmp = $(selector);
+    } else if(selector.indexOf(" ") !== -1) {									//this looks like a valid CSS selector
+        $tmp = $(selector);
+    } else {																	//evulate the string as an id
+        $tmp = $("#" + selector);
+    }
+
+    if($tmp.length === 0) {
+        // throw new Error("simpletope: We cannot find any DOM element with the CSS selector: '" + selector + "'");
+        return false;
+    } else {
+        return $tmp;
+    }
+};
+
+},{}],17:[function(require,module,exports){
+module.exports = function(filter) {
+    var $self = this;
+
+    return function( item ) {
+
+        var filters = filter.split(","),
+            active = [];
+
+        for (var i = 0, len = filters.length; i < len; i++) {
+
+            if(filters[i].indexOf("data-") !== -1) {
+
+                var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim();
+                var value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
+
+                if(jQuery( item.element ).data( cat ) !== undefined && jQuery( item.element ).data( cat ) !== null) {
+                    if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
+                        active.push(value);
+                    }
+                }
+
+            } else {
+
+                if( jQuery( item.element ).is( filters[i] ) ) {
+                    active.push(filters[i]);
+                }
+
+            }
+
+        }
+
+        if($self.filterMethod == "or") {
+            return active.length > 0;
+        } else {
+            return active.length == filters.length;
+        }
+
+    };
+
+};
+
+},{}],18:[function(require,module,exports){
+/**
+* _getForContainerAndId: Get an id or fallback to a parent div
+* @since 0.2.2
+* @param {object} $elm
+* @param {object} timestamp
+*/
+module.exports = function($elm, timestamp) {
+    var forElement = false,
+        container = false,
+        forContainer, idContainer, parentContainer, idElement;
+
+    //Check if this container is assisnged to a specified isotope instance
+    forContainer = $elm.closest('[data-for-container]');
+    if( forContainer.length > 0 ) {
+
+        forElement = forContainer.attr('data-for-container');
+        container = forContainer;
+
+    }
+
+    //Get the closest id
+    idContainer = $elm.closest('[id]');
+    if( idContainer.length > 0 ) {
+
+        idElement = idContainer.attr('id');
+        container = (!container) ? idContainer : container;//If container has not been defined, define it.
+
+    } else {
+
+        var formatted = $($elm.parent()).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
+        idElement = (formatted === "") ? timestamp : formatted ;
+        container = (!container) ? $elm.parent() : container;//If container has not been defined, define it.
+    }
+
+    return {
+        for: forElement,
+        id: idElement,
+        container: container
+    };
+
+};
+
+},{}],19:[function(require,module,exports){
+/**
+* _getInstances
+* @since 0.1.0
+*/
+module.exports =  function() {
+    var tmp = [];
+
+    $.each(this.instances, function(key, elm) {
+        tmp.push(elm.isotope);
+    });
+
+    return tmp;
+};
+
+},{}],20:[function(require,module,exports){
+/**
+ * _getSortData: Get the data-sort-by attributes and make them into an Isotope "getSortData" object
+ * @since 0.1.0
+ */
+module.exports =  function() {
+    var $sortData = {},
+        $dataSortBy = this.settings.dataSelectors.sortBy,
+        $dataSortBySelector = this.settings.dataSelectors.sortBySelector,
+        $dataSortByDefault = this.settings.defaults.sort;
+
+    $('[' + $dataSortBy + '], [' + $dataSortBySelector + ']').each(function(idx, elm) {
+        var $elm = $(elm),
+            $name = $elm.attr($dataSortBy) || null,
+            $selector = $elm.attr($dataSortBySelector) || null;
+
+        if($name != $dataSortByDefault) {
+            if($name !== null && $selector !== null) {
+                $sortData[$name] = $selector;
+            } else {
+                alert("Isotope sorting: "+$dataSortBy+" and "+$dataSortBySelector+" are required. Currently configured "+$dataSortBy+"='" + $name + "' and "+$dataSortBySelector+"='" + $selector + "'");
+            }
+        }
+    });
+
+    return $sortData;
+};
+
+},{}],21:[function(require,module,exports){
+/**
+* _setContainers: Set the filters/sorters/clear containers to the right Isotope container
+* @since 0.1.0
+* @param {object} $instance
+*/
+
+module.exports = function($instance) {
+    var $self = this,
+        sh = $self.instances[$self.guid],
+        timestamp = new Date().getTime();
+
+    $.each($('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]'), function(ind, elm) {
+        var $elm = $(elm),
+            filterContainer = $self.utils._getForContainerAndId.call($self, $elm, timestamp);
+
+        if( $self.guid === filterContainer.for || filterContainer.for === false) {
+            if( $elm.attr('data-filter') !== undefined ) {
+                sh.filterContainer[filterContainer.id] = $(filterContainer.container);
+            } else if ( $elm.attr('data-sort-by') !== undefined ) {
+                sh.sortContainer[filterContainer.id] = $(filterContainer.container);
+            } else if ( $elm.attr('data-clear-filter') !== undefined ) {
+                sh.clearContainer[filterContainer.id] = $(filterContainer.container);
+            } else if ( $elm.attr('data-feedback') !== undefined ) {
+                sh.feedbackContainer[filterContainer.id] = $(filterContainer.container);
+            }
+        }
     });
 };
 

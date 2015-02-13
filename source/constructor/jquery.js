@@ -4,7 +4,7 @@ module.exports = function(){
         instances = [];
 
     if(typeof window.Isotope != "function") {
-        alert("simpleIsotope: Isotope.JS couldn't be found. Please include 'isotope.pkgd.min.js'.")
+        alert("simpleIsotope: Isotope.JS couldn't be found. Please include 'isotope.js'.")
         return;
     }
 

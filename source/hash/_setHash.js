@@ -7,7 +7,8 @@
 
 module.exports = function($instance, $newHash) {
     var $currentHash = ($instance.options.filter == "*") ? "" : $instance.options.filter,
-        $combinedHash;
+        $combinedHash,
+        $endHash = [];
 
     if($newHash != "*") {
 
@@ -17,8 +18,7 @@ module.exports = function($instance, $newHash) {
             $combinedHash = $currentHash.replace($newHash, "");
         }
 
-        var $formattedHash = this.hash._formatHash(/\[data\-(.+?)\=\'(.+?)\'\]|(.[A-Za-z0-9]+)/g, $combinedHash),
-            $endHash = [];
+        var $formattedHash = this.hash._formatHash(/\[data\-(.+?)\=\'(.+?)\'\]|(.[A-Za-z0-9]+)/g, $combinedHash);
 
         $.each($formattedHash, function(key, elm) {
             if(elm === true) {//isClass
@@ -33,7 +33,7 @@ module.exports = function($instance, $newHash) {
         $endHash = $newHash;
     }
 
-    if($endHash == "*" || $endHash == "") {
+    if($endHash === "*" || $endHash === "") {
         window.location.hash = "";
     } else {
         window.location.hash = (this.encodeURI === true) ? encodeURIComponent($endHash) : $endHash;

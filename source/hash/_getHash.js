@@ -7,7 +7,7 @@
     var $hash = window.location.hash || false,
         $newHash = "";
 
-    $hash = ($hash !== false && $hash != "#" && $hash != "") ? decodeURIComponent(window.location.hash) : '*';
+    $hash = ($hash !== false && $hash !== "#" && $hash !== "") ? decodeURIComponent(window.location.hash) : '*';
 
     //Remove hash from first character if its exist
     if ($hash.charAt(0) === '#') {
@@ -20,18 +20,16 @@
         if($partHash.indexOf("=") !== -1) {
 
             var tmp = $partHash.split("="),
-                arr = [];
+                arr = [], values, name;
 
             if(tmp.length > 1) {
-                var name = tmp[0],
-                    values = tmp[1].replace(/\'/g, "");
+                name = tmp[0];
+                values = tmp[1].replace(/\'/g, "");
             }
 
             values = values.split(",");
             for (var i=0; i<values.length; i++) {
                 arr.push("[data-" + name + "='" + values[i] + "']");
-
-                // $("[data-filter=\"[data-" + name + "='" + values[i] + "']\"]").addClass($self.settings.defaults.classNames.active);
             }
 
             $newHash += arr.join(",");

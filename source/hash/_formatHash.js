@@ -8,7 +8,7 @@ module.exports = function(re, str) {
     var matches = {},
         match;
 
-    while ((match = re.exec(str)) != null) {
+    while ((match = re.exec(str)) !== null) {
         if (match.index === re.lastIndex) {
             re.lastIndex++;
         }
@@ -19,7 +19,7 @@ module.exports = function(re, str) {
 
         } else {
 
-            if(matches[match[1]] == null || matches[match[1]] == undefined) {
+            if(matches[match[1]] === null || matches[match[1]] === undefined) {
                 matches[match[1]] = [];
             }
             matches[match[1]].push(match[2]);

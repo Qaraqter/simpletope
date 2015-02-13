@@ -5,7 +5,7 @@ module.exports = function($args){
         theHash = this.hash._getHash.call(this);
 
     this._getFilterTestOrginal = Isotope.prototype._getFilterTest;
-    Isotope.prototype._getFilterTest = this._getFilterTest.bind(this);
+    Isotope.prototype._getFilterTest = this.utils._getFilterTest.bind(this);
 
     this.guid = this.container.attr("id") || new Date().getTime();
 
@@ -23,7 +23,7 @@ module.exports = function($args){
             filter: theHash || "*",
             itemSelector: $self.settings.itemSelector || '.item',
             layoutMode: $self.container.data("layout") || "fitRows",
-            getSortData: $self._getSortData()
+            getSortData: $self.utils._getSortData.call(this)
         }),
         filterContainer: {},
         sortContainer: {},
@@ -31,7 +31,7 @@ module.exports = function($args){
         feedbackContainer: {}
     };
 
-    this._setContainers(this.instances[this.guid].isotope);
+    this.utils._setContainers.call(this, this.instances[this.guid].isotope);
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {
         this.useHash = true;

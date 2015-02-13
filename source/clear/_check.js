@@ -16,23 +16,18 @@ module.exports = function($instance) {
         $self = this;
 
     $.each($instance.clearContainer, function(key, container) {
-        var $clearers = container;
 
-        $clearers.each(function(idx, elm) {
+        container.each(function(idx, elm) {
             var $elm = $(elm),
                 $history = $instance.isotope.sortHistory;
 
             if($instance.isotope.options.filter != $defaultFilter || $history[$history.length - 1] != $defaultSort) {
-
                 $elm.removeClass("hide").show();
-
             } else {
-
                 $elm.hide();
-
             }
 
         });
     });
 
-}
+};
