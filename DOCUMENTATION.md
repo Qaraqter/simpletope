@@ -16,6 +16,7 @@
   1. [Feedback](#feedback)
   1. [Clear filters](#clear-filters)
   1. [Hash support](#hash-support)
+  1. [imagesLoaded](#imagesloaded)
 
 ## Markup
 All the data used for filter and sorting are kept in the markup. It could be a text value, like a title or tag. Or it could be a number, like a price, measurement, or rating.
@@ -140,3 +141,6 @@ You can clear all applied filters with `data-clear-filter`, the element will be 
 You can enable hash support by adding `data-hash` to the container of your items. The hash will automatically update the URL with `http://path/#category=transition`
 
     <div id="container" data-isotope data-hash>
+
+## imagesLoaded
+[imagesLoaded](http://imagesloaded.desandro.com/) is supported, just include the script `imagesloaded.js` after loading `isotope.js`. 
