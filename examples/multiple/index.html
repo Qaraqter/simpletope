@@ -48,7 +48,7 @@
 
                 <div class="row">
 
-                    <div id="sorts" class="col-sm-8" data-for-container="results">
+                    <div id="filters" class="col-sm-8" data-isotope-container="results">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
@@ -56,20 +56,20 @@
                             <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
-                        <div data-clear-filter data-for-container="results" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
+                        <div data-clear-filter data-isotope-container="results" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
                     </div>
 
-                    <div id="sorters" class="col-sm-4" data-for-container="results">
+                    <div id="sorters" class="col-sm-4" data-isotope-container="results">
                         <label>Sort by date:</label>
                         <div class="btn-group" style="display:block;">
-                            <button data-sort-by="original-order" class="btn btn-default active"><i class="fa fa-arrow-up"></i></button>
+                            <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="desc" class="btn btn-default active"><i class="fa fa-arrow-up"></i></button>
                             <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc" class="btn btn-default"><i class="fa fa-arrow-down"></i></button>
                         </div>
                     </div>
 
                 </div>
 
-                <div id="results" class="random" data-isotope data-filter-method="or" data-layout="packery">
+                <div id="results" class="random" data-isotope data-layout="packery">
 
                     <section class="item col-xs-6 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
                     <section class="item col-xs-4 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="feedback">
-                    <div data-feedback="Showing {delta} items" data-for-container="results"></div>
+                    <div data-feedback="Showing {delta} items" data-isotope-container="results"></div>
                 </div>
 
             </article>
@@ -94,7 +94,7 @@
 
                 <div class="row">
 
-                    <div id="sorts2" class="col-sm-8" data-for-container="results2">
+                    <div id="filters2" class="col-sm-8" data-isotope-container="results2">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
@@ -102,20 +102,20 @@
                             <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
-                        <div data-clear-filter data-for-container="results2" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
+                        <div data-clear-filter data-isotope-container="results2" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
                     </div>
 
-                    <div id="sorters2" class="col-sm-4" data-for-container="results2">
+                    <div id="sorters2" class="col-sm-4" data-filter-type="multiple" data-isotope-container="results2">
                         <label>Sort by date:</label>
                         <div class="btn-group" style="display:block;">
-                            <button data-sort-by="original-order" class="btn btn-default active"><i class="fa fa-arrow-up"></i></button>
+                            <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="desc" class="btn btn-default"><i class="fa fa-arrow-up"></i></button>
                             <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc" class="btn btn-default"><i class="fa fa-arrow-down"></i></button>
                         </div>
                     </div>
 
                 </div>
 
-                <div id="results2" class="random" data-isotope data-filter-method="or" data-filter-type="multiple" data-layout="packery">
+                <div id="results2" class="random" data-isotope data-filter-method="or" data-layout="packery">
 
                     <section class="item col-xs-2 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
                     <section class="item col-xs-6 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
@@ -131,7 +131,7 @@
                 </div>
 
                 <div class="feedback">
-                    <div data-feedback="Showing {delta} items" data-for-container="results2"></div>
+                    <div data-feedback="Showing {delta} items" data-isotope-container="results2"></div>
                 </div>
 
             </article>

@@ -17,7 +17,7 @@ module.exports = function($instance) {
 
     $.each($instance.clearContainer, function(key, container) {
 
-        container.each(function(idx, elm) {
+        container.elm.each(function(idx, elm) {
             var $elm = $(elm),
                 $history = $instance.isotope.sortHistory;
 

@@ -16,11 +16,12 @@ module.exports = function(){
                 dataSelectors: {
                     filter: 'data-filter',
                     type: 'data-filter-type',
-                    filterMethod: 'data-filter-method',
+                    filterMethod: 'data-filter-method',//Depracated
+                    filterMultiple: 'data-filter-multiple',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
                     sortDirection: 'data-sort-direction',
-                    forContainer: 'data-for-container',
+                    forContainer: 'data-isotope-container',
                     clearFilter: 'data-clear-filter',
                     feedback: 'data-feedback'
                 },

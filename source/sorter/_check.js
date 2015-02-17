@@ -10,18 +10,38 @@ module.exports = function($instance) {
         $defaultSort = this.settings.defaults.sort,
         $instance = $instance || this.instances[this.guid],
         $activeClass = this.settings.defaults.classNames.active,
-        $sortHistory = $instance.isotope.sortHistory;
+        $sortHistory = $instance.isotope.sortHistory,
+        $sortAscending = $instance.isotope.options.sortAscending;
 
     $.each($instance.sortContainer, function( idx, container ) {
+        var elm = container.elm.find("["+$dataSort+"]"),
+            sortDirection = "desc";
 
-        //Remove all active classes first time
-        container.find("["+$dataSort+"]").removeClass($activeClass);
+        if($sortAscending) {
+            sortDirection = "asc";
+        }
 
-        //Add active classes
-        var active = container.find("["+$dataSort+"=\""+ $sortHistory[0] +"\"]").addClass($activeClass);
+        if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
 
-        if(active.length > 0 && $sortHistory[0] != $defaultSort) {
-            container.find("["+$dataSort+"=\""+$defaultSort+"\"]").removeClass($activeClass);
+            // elm.prop('selected', false);
+            // var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').prop('selected', 'selected');
+            //
+            // console.log(active);
+
+        } else {
+
+
+            //Remove all active classes first time
+            elm.removeClass($activeClass);
+
+            //Add active classes
+            var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').addClass($activeClass);
+
+            if(active.length > 0 && $sortHistory[0] != $defaultSort) {
+                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").removeClass($activeClass);
+            } else {
+                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").addClass($activeClass);
+            }
         }
 
     });

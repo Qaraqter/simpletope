@@ -14,7 +14,7 @@ module.exports = function($instance) {
     $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
 
         $.each($instance.filterContainer, function( idx, container ) {
-            var elm = container.find("["+$dataFilter+"=\""+filter+"\"]");
+            var elm = container.elm.find("["+$dataFilter+"=\""+filter+"\"]");
 
             if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
 
@@ -24,14 +24,14 @@ module.exports = function($instance) {
 
                 if(index === 0) {
                     //Remove all active classes first time
-                    container.find("["+$dataFilter+"]").removeClass($activeClass);
+                    container.elm.find("["+$dataFilter+"]").removeClass($activeClass);
                 }
 
                 //Add active classes
                 var active = elm.addClass($activeClass);
 
                 if(active.length > 0 && filter != $defaultFilter) {
-                    container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+                    container.elm.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
                 }
 
             }

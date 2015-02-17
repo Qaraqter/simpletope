@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        <title>simpleIsotope: Single example</title>
+        <title>simpleIsotope: Hash example</title>
         <meta name="description" content="Blader door ons werk en bekijk welke opdrachten we gedaan hebben en voor welke klanten we werken">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -33,28 +33,19 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="text-muted">Examples:</li>
-                            <li class="active"> <a href="../single/">Single</a> </li>
+                            <li class=""> <a href="../single/">Single</a> </li>
                             <li class=""> <a href="../multiple/">Multiple</a> </li>
-                            <li class=""> <a href="../hash/">Hash</a> </li>
+                            <li class="active"> <a href="../hash/">Hash</a> </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>
 
-        <div class="container singleExample">
+        <div class="container">
             <article>
                 <div class="row">
-                    <div id="sortSelect" class="col-sm-3 col-md-3" data-filter-multiple="or">
-                        <label>Sort by:</label>
-                        <select class="form-control">
-                            <option data-sort-by="original-order">Newest first</option>
-                            <option data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="asc">Oldest first</option>
-                            <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="asc">Category ascending</option>
-                            <option data-sort-by="category" data-sort-selector="[data-category]" data-sort-direction="desc">Category descending</option>
-                        </select>
-                    </div>
-                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3" data-filter-multiple="or">
+                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3" data-isotope-container="results">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
@@ -63,7 +54,7 @@
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
                     </div>
-                    <div id="filterButtonsClass" class="col-sm-6 col-md-6" data-filter-multiple="or">
+                    <div id="filterButtonsClass" class="col-sm-9 col-md-9" data-isotope-container="results" data-filter-multiple="or">
                         <label>Filter by color:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter=".blue" class="btn btn-default">Blue</button>
@@ -74,7 +65,10 @@
                     </div>
                 </div>
 
-                <div id="results" data-isotope>
+                <div id="results"
+                    data-isotope
+                    data-filter-chain-method="or"
+                >
 
                     <section class="item col-xs-12 col-sm-6 col-md-4 brown" data-date="20141020" data-category="Game" data-colour="brown">
                         <div class="thumbnail">
@@ -188,7 +182,6 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
         <script src="../assets/js/isotope.pkgd.min.js"></script>
-        <script src="../../vendors/imagesloaded/imagesloaded.pkgd.min.js"></script>
         <script src="../../build/simpletope.dev.js"></script>
 
     </body>

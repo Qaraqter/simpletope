@@ -45,7 +45,7 @@
         <div class="container">
             <article>
                 <div class="row">
-                    <div id="sortSelect" class="col-sm-3 col-md-3" data-for-container="results">
+                    <div id="sortSelect" class="col-sm-3 col-md-3" data-isotope-container="results">
                         <label>Sort by:</label>
                         <select class="form-control">
                             <option data-sort-by="original-order">Newest first</option>
@@ -63,7 +63,7 @@
                             <option data-filter="[data-category='Science']">Science</option>
                         </select>
                     </div>
-                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3" data-for-container="results">
+                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3" data-isotope-container="results">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
@@ -72,14 +72,14 @@
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
                     </div>
-                    <div id="filterButtonsClass" class="col-sm-3 col-md-3" data-for-container="results">
+                    <div id="filterButtonsClass" class="col-sm-3 col-md-3" data-isotope-container="results">
                         <label>Filter by color:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter=".blue" class="btn btn-default">Blue</button>
                             <button data-filter=".black" class="btn btn-default">Black</button>
                             <button data-filter=".brown" class="btn btn-default">Brown</button>
                         </div>
-                        <div data-clear-filter class="close" data-for-container="results"><i class="fa fa-close"></i> Clear filters</div>
+                        <div data-clear-filter class="close" data-isotope-container="results"><i class="fa fa-close"></i> Clear filters</div>
                     </div>
                 </div>
 
@@ -188,7 +188,7 @@
                 </div>
 
                 <div class="feedback">
-                    <div data-feedback="Showing {delta} items" data-for-container="results"></div>
+                    <div data-feedback="Showing {delta} items" data-isotope-container="results"></div>
                 </div>
 
             </article>

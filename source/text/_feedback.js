@@ -3,7 +3,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.feedbackContainer, function(key, container) {
-        var $feedback = container;
+        var $feedback = container.elm;
 
         $feedback.each(function(idx, elm) {
             var $elm = $(elm);

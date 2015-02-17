@@ -27,7 +27,7 @@ module.exports = function($instance) {
 
     $.each($instance.clearContainer, function(key, container) {
 
-        container.each(function(idx, elm) {
+        container.elm.each(function(idx, elm) {
             var $elm = $(elm),
                 $history = $instance.isotope.sortHistory;
 
@@ -51,7 +51,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.clearContainer, function(key, container) {
-        var $clearers = container;
+        var $clearers = container.elm;
 
         $clearers.each(function(idx, elm) {
             var $elm = $(elm);
@@ -64,7 +64,7 @@ module.exports = function() {
                 } else {
                     $instance.isotope.arrange({
                         filter: $defaultFilter,
-                        sortBy: $defaultSort
+                        // sortBy: $defaultSort
                     });
 
                     $self._onIsotopeChange.call($self, $instance);
@@ -96,11 +96,12 @@ module.exports = function(){
                 dataSelectors: {
                     filter: 'data-filter',
                     type: 'data-filter-type',
-                    filterMethod: 'data-filter-method',
+                    filterMethod: 'data-filter-method',//Depracated
+                    filterMultiple: 'data-filter-multiple',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
                     sortDirection: 'data-sort-direction',
-                    forContainer: 'data-for-container',
+                    forContainer: 'data-isotope-container',
                     clearFilter: 'data-clear-filter',
                     feedback: 'data-feedback'
                 },
@@ -141,29 +142,29 @@ module.exports = function($args){
 
     this.guid = this.container.attr("id") || new Date().getTime();
 
-    this.filterMultiple = this.container.attr(this.settings.dataSelectors.type) || "";
-    this.filterMultiple = (this.filterMultiple.toLowerCase() == "multiple");
-
-    this.filterMethod = this.container.attr(this.settings.dataSelectors.filterMethod) || "";
-    this.filterMethod = this.filterMethod.toLowerCase();
-
     this.encodeURI = false;
+
+    this.allFilters[this.guid] = this.allFilters[this.guid] || {};
+    this.allSorters[this.guid] = this.allSorters[this.guid] || {};
 
     //First time init isotope
     this.instances[this.guid] = {
-        isotope: new Isotope(this.container.context, {
-            filter: theHash || "*",
-            itemSelector: $self.settings.itemSelector || '.item',
-            layoutMode: $self.container.data("layout") || "fitRows",
-            getSortData: $self.utils._getSortData.call(this)
-        }),
+        isotope: false,
         filterContainer: {},
         sortContainer: {},
         clearContainer: {},
         feedbackContainer: {}
     };
 
+    //Get containers of filters
     this.utils._setContainers.call(this, this.instances[this.guid].isotope);
+
+    this.instances[this.guid].isotope = new Isotope(this.container.context, {
+        filter: theHash || "*",
+        itemSelector: $self.settings.itemSelector || '.item',
+        layoutMode: $self.container.data("layout") || "fitRows",
+        getSortData: $self.utils._getSortData.call(this)
+    });
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {
         this.useHash = true;
@@ -197,7 +198,7 @@ module.exports = function($instance) {
     $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
 
         $.each($instance.filterContainer, function( idx, container ) {
-            var elm = container.find("["+$dataFilter+"=\""+filter+"\"]");
+            var elm = container.elm.find("["+$dataFilter+"=\""+filter+"\"]");
 
             if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
 
@@ -207,14 +208,14 @@ module.exports = function($instance) {
 
                 if(index === 0) {
                     //Remove all active classes first time
-                    container.find("["+$dataFilter+"]").removeClass($activeClass);
+                    container.elm.find("["+$dataFilter+"]").removeClass($activeClass);
                 }
 
                 //Add active classes
                 var active = elm.addClass($activeClass);
 
                 if(active.length > 0 && filter != $defaultFilter) {
-                    container.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+                    container.elm.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
                 }
 
             }
@@ -237,7 +238,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.filterContainer, function(key, container) {
-        var $filters = container.find('['+$dataFilter+']');
+        var $filters = container.elm.find('['+$dataFilter+']');
 
         $filters.each(function(idx, elm) {
             var $elm = $(elm),
@@ -249,6 +250,7 @@ module.exports = function() {
             how.element.on(how.eventName, function(e) {
                 e.preventDefault();
 
+                // TODO: Do not return false before setting isotope filters
                 if(how.eventName == "change") {
                     if(how.element.find('option:selected')[0] != elm) {
                         return false;
@@ -257,7 +259,8 @@ module.exports = function() {
 
                 var $dataFilterAttr = $elm.attr($dataFilter),
                     $filterValue = $dataFilterAttr,
-                    val = $dataFilterAttr;
+                    newFilters = $dataFilterAttr,
+                    activeFilters, currentFilters;
 
                 if($self.useHash === true) {
 
@@ -265,27 +268,60 @@ module.exports = function() {
 
                 } else {
 
-                    if($self.filterMultiple) {
+                    // Get current active filters from isotope instance
+                    activeFilters = $instance.isotope.options.filter;
 
-                        if($instance.isotope.options.filter === "*" || $filterValue === "*") {
-                            //Do nothing
-                        } else if($instance.isotope.options.filter.indexOf($filterValue) === -1) {
-                            $filterValue = $instance.isotope.options.filter.split(",");
-                            $filterValue.push(val);
-                            $filterValue = $filterValue.join(",");
+                    // Check if clicked filter's value is not a wildcard
+                    if(activeFilters !== "*" && $filterValue !== "*") {
+                        activeFilters = activeFilters.split(",");
+                        newFilters = [];
+
+                        //Loop through all active filters
+                        $.each(activeFilters, function(index, element) {
+                            var setting = $self.allFilters[$self.guid][element];
+
+                            //Check if this container allows multiple filters
+                            if(setting.filterMultiple) {
+                                newFilters.push(element);
+
+                            //Container only allows one filter
+                            } else {
+
+                                //Pass on filters that are not in same container
+                                if(container.elm !== setting.elm) {
+                                    newFilters.push(element);
+                                }
+                            }
+                        });
+
+                        //Check if this container allows multiple filters
+                        if(container.filterMultiple) {
+
+                            //Check if filter is already defined, if so toggle it
+                            if( newFilters.indexOf($filterValue) === -1 ) {
+                                newFilters.push($filterValue);
+                            } else {
+                                newFilters.splice(newFilters.indexOf($filterValue), 1);
+                            }
+
+                        //Container only allows one filter
                         } else {
-                            $filterValue = $instance.isotope.options.filter.split(",");
-                            $filterValue.splice($filterValue.indexOf(val), 1);
-                            $filterValue = $filterValue.join(",");
+
+                            //Pass on the clicked value
+                            newFilters.push($filterValue);
                         }
 
-                        if($filterValue === "") {
-                            $filterValue = "*";
-                        }
+                        newFilters = newFilters.join(",");
+
+                    }
+
+                    //If filters is empty then reset it all
+                    if(newFilters === "") {
+                        newFilters = "*";
                     }
 
                     $instance.isotope.arrange({
-                        filter: $filterValue
+                        filter: newFilters
                     });
 
                     $self._onIsotopeChange.call($self, $instance);
@@ -444,6 +480,9 @@ $.simpleIsotope = require("./constructor/prototype.js");
 
 $.simpleIsotope.prototype = {
     instances: {},
+    allFilters: {},
+    allSorters: {},
+
     constructor: $.simpleIsotope,
 
     hash: {
@@ -561,18 +600,38 @@ module.exports = function($instance) {
         $defaultSort = this.settings.defaults.sort,
         $instance = $instance || this.instances[this.guid],
         $activeClass = this.settings.defaults.classNames.active,
-        $sortHistory = $instance.isotope.sortHistory;
+        $sortHistory = $instance.isotope.sortHistory,
+        $sortAscending = $instance.isotope.options.sortAscending;
 
     $.each($instance.sortContainer, function( idx, container ) {
+        var elm = container.elm.find("["+$dataSort+"]"),
+            sortDirection = "desc";
 
-        //Remove all active classes first time
-        container.find("["+$dataSort+"]").removeClass($activeClass);
+        if($sortAscending) {
+            sortDirection = "asc";
+        }
 
-        //Add active classes
-        var active = container.find("["+$dataSort+"=\""+ $sortHistory[0] +"\"]").addClass($activeClass);
+        if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
 
-        if(active.length > 0 && $sortHistory[0] != $defaultSort) {
-            container.find("["+$dataSort+"=\""+$defaultSort+"\"]").removeClass($activeClass);
+            // elm.prop('selected', false);
+            // var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').prop('selected', 'selected');
+            //
+            // console.log(active);
+
+        } else {
+
+
+            //Remove all active classes first time
+            elm.removeClass($activeClass);
+
+            //Add active classes
+            var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').addClass($activeClass);
+
+            if(active.length > 0 && $sortHistory[0] != $defaultSort) {
+                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").removeClass($activeClass);
+            } else {
+                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").addClass($activeClass);
+            }
         }
 
     });
@@ -594,7 +653,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.sortContainer, function(key, container) {
-        var $sorters = container.find('['+$dataSortBy+']');
+        var $sorters = container.elm.find('['+$dataSortBy+']');
 
         $sorters.each(function(idx, elm) {
             var $elm = $(elm),
@@ -613,39 +672,53 @@ module.exports = function() {
                     }
                 }
 
-                var $sortByValue = '';
-                if($self.filterMultiple !== false) {
+                var $sortByValue = '',
+                    $sortAsc = false;
 
-                    $sortByValue = [];
+                // TODO: I'm ganna leave this code here for now, if we ever need to add multiple support on sorters
+                // if($self.filterMultiple) {
+                //
+                //     $sortByValue = [];
+                //
+                //     if($dataSortAttr == $defaultSort) {
+                //
+                //         $sortArray = [];
+                //
+                //     } else {
+                //
+                //         if($sortArray.indexOf($dataSortAttr) === -1) {//item not filtered
+                //
+                //             $sortArray.push($dataSortAttr);
+                //
+                //         } else {//item already filtered
+                //
+                //             if($instance.isotope.options.sortAscending !== ($elm.attr($dataSortDirection).toLowerCase() === "asc")) {//Are we changing desc or asc?
+                //                 //Do nothing, array will be the same, we're only chanigng sort direction
+                //             } else {
+                //                 $sortArray.splice($sortArray.indexOf($dataSortAttr), 1); //same item filtered, remove this item from array
+                //             }
+                //         }
+                //
+                //     }
+                //
+                //     if($sortArray.length === 0) {
+                //         $sortByValue = $defaultSort;
+                //     } else {
+                //         $sortByValue = $sortArray;
+                //     }
+                //
+                // } else {
+                //     $sortByValue = $dataSortAttr;
+                // }
 
-                    if($dataSortAttr == $defaultSort) {
-                        $sortArray = [];
-                    } else {
-                        if($sortArray.indexOf($dataSortAttr) === -1) {
-                            $sortArray.push($dataSortAttr);
-                        } else {
-                            $sortArray.splice($sortArray.indexOf($dataSortAttr), 1);
-                        }
-
-                    }
-
-                    if($sortArray.length === 0) {
-                        $sortByValue = $defaultSort;
-                    } else {
-                        $sortByValue = $sortArray;
-                    }
-
-                } else {
-                    $sortByValue = $dataSortAttr;
-                }
-
-                var $sortAsc = false;
+                $sortByValue = $dataSortAttr;
 
                 if($elm.attr($dataSortDirection) !== null && $elm.attr($dataSortDirection) !== undefined) {
-                    if($elm.attr($dataSortDirection).toLowerCase() == "asc") {
+                    if($elm.attr($dataSortDirection).toLowerCase() === "asc") {
                         $sortAsc = true;
                     }
                 }
+
                 if($elm.attr($dataSortBy) == $defaultSort) {
                     $sortAsc = true;
                 }
@@ -669,7 +742,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.feedbackContainer, function(key, container) {
-        var $feedback = container;
+        var $feedback = container.elm;
 
         $feedback.each(function(idx, elm) {
             var $elm = $(elm);
@@ -720,14 +793,16 @@ module.exports = function(filter) {
     return function( item ) {
 
         var filters = filter.split(","),
-            active = [];
+            active = [],
+            container = [];
 
         for (var i = 0, len = filters.length; i < len; i++) {
 
+            //Enable filtering with data-attributes
             if(filters[i].indexOf("data-") !== -1) {
 
-                var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim();
-                var value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
+                var cat = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$1").trim(),
+                    value = filters[i].replace(/\[data\-(.+?)\=\'(.+?)\'\]/g, "$2").trim();
 
                 if(jQuery( item.element ).data( cat ) !== undefined && jQuery( item.element ).data( cat ) !== null) {
                     if( jQuery( item.element ).data( cat ).indexOf( value ) !== -1 ) {
@@ -737,6 +812,7 @@ module.exports = function(filter) {
 
             } else {
 
+                //Default filtering
                 if( jQuery( item.element ).is( filters[i] ) ) {
                     active.push(filters[i]);
                 }
@@ -745,7 +821,22 @@ module.exports = function(filter) {
 
         }
 
-        if($self.filterMethod == "or") {
+        var filterMethod;
+        if(filters.indexOf("*") === -1) {
+
+            $.each(filters, function(idx, elm) {
+                if($self.allFilters[$self.guid][elm].filterMethod === "or") {
+                    filterMethod = "or";
+                } else {
+                    filterMethod = "and";
+                }
+            });
+
+        } else {
+            return true;
+        }
+
+        if(filterMethod == "or") {
             return active.length > 0;
         } else {
             return active.length == filters.length;
@@ -763,37 +854,43 @@ module.exports = function(filter) {
 * @param {object} timestamp
 */
 module.exports = function($elm, timestamp) {
-    var forElement = false,
-        container = false,
-        forContainer, idContainer, parentContainer, idElement;
+    var forElement, container, forContainer,
+        idContainer, parentContainer, idElement;
 
-    //Check if this container is assisnged to a specified isotope instance
-    forContainer = $elm.closest('[data-for-container]');
+    // Check if this container is assisnged to a specified isotope instance
+    forContainer = $elm.closest('[' + this.settings.dataSelectors.forContainer + ']');
     if( forContainer.length > 0 ) {
 
-        forElement = forContainer.attr('data-for-container');
+        forElement = forContainer.attr(this.settings.dataSelectors.forContainer);
         container = forContainer;
 
     }
 
-    //Get the closest id
+    // Get the closest id
     idContainer = $elm.closest('[id]');
     if( idContainer.length > 0 ) {
 
         idElement = idContainer.attr('id');
-        container = (!container) ? idContainer : container;//If container has not been defined, define it.
+        container = (!container) ? idContainer : container; //If container has not been defined, define it.
 
     } else {
 
         var formatted = $($elm.parent()).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
         idElement = (formatted === "") ? timestamp : formatted ;
-        container = (!container) ? $elm.parent() : container;//If container has not been defined, define it.
+        container = (!container) ? $elm.parent() : container; //If container has not been defined, define it.
+
     }
 
+    var filterContainerMultiple = $(container).attr(this.settings.dataSelectors.filterMultiple),
+        filterMultiple = ( filterContainerMultiple !== null && filterContainerMultiple !== undefined ),
+        filterMethod = filterContainerMultiple || "or";
+
     return {
-        for: forElement,
+        for: forElement || this.guid,
         id: idElement,
-        container: container
+        elm: $(container),
+        filterMultiple: filterMultiple,
+        filterMethod: filterMethod
     };
 
 };
@@ -845,6 +942,7 @@ module.exports =  function() {
 /**
 * _setContainers: Set the filters/sorters/clear containers to the right Isotope container
 * @since 0.1.0
+* @updated 0.3.3
 * @param {object} $instance
 */
 
@@ -853,22 +951,44 @@ module.exports = function($instance) {
         sh = $self.instances[$self.guid],
         timestamp = new Date().getTime();
 
-    $.each($('[data-filter], [data-sort-by], [data-clear-filter], [data-feedback]'), function(ind, elm) {
+    $('[data-filter]:first-child').each(eachItem.bind({ dataType: 'data-filter' }));
+    $('[data-sort-by]:first-child').each(eachItem.bind({ dataType: 'data-sort-by' }));
+    $('[data-clear-filter]').each(eachItem.bind({ dataType: 'data-clear-filter' }));
+    $('[data-feedback]').each(eachItem.bind({ dataType: 'data-feedback' }));
+
+    function eachItem(ind, elm) {
         var $elm = $(elm),
+            dataType = this.dataType,
             filterContainer = $self.utils._getForContainerAndId.call($self, $elm, timestamp);
 
         if( $self.guid === filterContainer.for || filterContainer.for === false) {
-            if( $elm.attr('data-filter') !== undefined ) {
-                sh.filterContainer[filterContainer.id] = $(filterContainer.container);
-            } else if ( $elm.attr('data-sort-by') !== undefined ) {
-                sh.sortContainer[filterContainer.id] = $(filterContainer.container);
-            } else if ( $elm.attr('data-clear-filter') !== undefined ) {
-                sh.clearContainer[filterContainer.id] = $(filterContainer.container);
-            } else if ( $elm.attr('data-feedback') !== undefined ) {
-                sh.feedbackContainer[filterContainer.id] = $(filterContainer.container);
+            if( dataType === "data-filter" ) {
+                sh.filterContainer[filterContainer.id] = filterContainer;
+            } else if( dataType === "data-sort-by" ) {
+                sh.sortContainer[filterContainer.id] = filterContainer;
+            } else if( dataType === "data-clear-filter" ) {
+                sh.clearContainer[filterContainer.id] = filterContainer;
+            } else if( dataType === "data-feedback" ) {
+                sh.feedbackContainer[filterContainer.id] = filterContainer;
             }
         }
-    });
+
+        if( dataType === "data-filter" || dataType === "data-sort-by" ) {
+            var filters = filterContainer.elm.find('['+dataType+']');
+
+            filters.each(function(index, filter) {
+                if($self.guid === filterContainer.for) {
+                    if( $(filter).attr(dataType) !== "*" ) { //TODO: how to handle wildcard?
+                        if( dataType === "data-filter" ) {
+                            $self.allFilters[filterContainer.for][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
+                        } else if( dataType === "data-sort-by" ) {
+                            $self.allSorters[filterContainer.for][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
+                        }
+                    }
+                }
+            });
+        }
+    }
 };
 
 },{}]},{},[12])(12)

@@ -9,29 +9,29 @@ module.exports = function($args){
 
     this.guid = this.container.attr("id") || new Date().getTime();
 
-    this.filterMultiple = this.container.attr(this.settings.dataSelectors.type) || "";
-    this.filterMultiple = (this.filterMultiple.toLowerCase() == "multiple");
-
-    this.filterMethod = this.container.attr(this.settings.dataSelectors.filterMethod) || "";
-    this.filterMethod = this.filterMethod.toLowerCase();
-
     this.encodeURI = false;
+
+    this.allFilters[this.guid] = this.allFilters[this.guid] || {};
+    this.allSorters[this.guid] = this.allSorters[this.guid] || {};
 
     //First time init isotope
     this.instances[this.guid] = {
-        isotope: new Isotope(this.container.context, {
-            filter: theHash || "*",
-            itemSelector: $self.settings.itemSelector || '.item',
-            layoutMode: $self.container.data("layout") || "fitRows",
-            getSortData: $self.utils._getSortData.call(this)
-        }),
+        isotope: false,
         filterContainer: {},
         sortContainer: {},
         clearContainer: {},
         feedbackContainer: {}
     };
 
+    //Get containers of filters
     this.utils._setContainers.call(this, this.instances[this.guid].isotope);
+
+    this.instances[this.guid].isotope = new Isotope(this.container.context, {
+        filter: theHash || "*",
+        itemSelector: $self.settings.itemSelector || '.item',
+        layoutMode: $self.container.data("layout") || "fitRows",
+        getSortData: $self.utils._getSortData.call(this)
+    });
 
     if(this.container.data("hash") !== null && this.container.data("hash") !== undefined) {
         this.useHash = true;

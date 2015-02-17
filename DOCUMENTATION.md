@@ -103,9 +103,9 @@ If you want to control the ascending or descending options then you can use `dat
 
 ## Multiple Isotope instances
 ### Target a single Isotope instance
-By default the filters will be applied to all Isotope instances created a page, if you want to target a single isotope then you can apply `data-for-container` on a common container that holds your filters, the value should be a valid HTML id that holds your items (see [Markup](#markup) for the items):
+By default the filters will be applied to all Isotope instances created a page, if you want to target a single isotope then you can apply `data-isotope-container` on a common container that holds your filters, the value should be a valid HTML id that holds your items (see [Markup](#markup) for the items):
 
-    <div id="filterButtonsByClass" data-for-container="container">
+    <div id="filterButtonsByClass" data-isotope-container="container">
         <label>Filter by color:</label>
         <div class="btn-group">
             <button data-filter=".blue" class="btn btn-default">Blue</button>
@@ -126,7 +126,7 @@ You can specify the layout mode by adding `data-layout` to the container of your
 You can specify a feedback line with the current numbers of items shown, you can use `data-feedback` with the attribute value as the text you want. You can use the placeholder `{delta}` to get the total items in a number.
 
     <div class="feedback">
-        <div data-feedback="Showing {delta} items" data-for-container="results"></div>
+        <div data-feedback="Showing {delta} items" data-isotope-container="results"></div>
     </div>
 
 The above example would generate: `Showing 9 items`

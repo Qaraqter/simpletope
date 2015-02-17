@@ -4,6 +4,9 @@ $.simpleIsotope = require("./constructor/prototype.js");
 
 $.simpleIsotope.prototype = {
     instances: {},
+    allFilters: {},
+    allSorters: {},
+
     constructor: $.simpleIsotope,
 
     hash: {

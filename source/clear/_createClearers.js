@@ -6,7 +6,7 @@ module.exports = function() {
         $self = this;
 
     $.each($instance.clearContainer, function(key, container) {
-        var $clearers = container;
+        var $clearers = container.elm;
 
         $clearers.each(function(idx, elm) {
             var $elm = $(elm);
@@ -19,7 +19,7 @@ module.exports = function() {
                 } else {
                     $instance.isotope.arrange({
                         filter: $defaultFilter,
-                        sortBy: $defaultSort
+                        // sortBy: $defaultSort
                     });
 
                     $self._onIsotopeChange.call($self, $instance);
