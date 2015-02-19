@@ -1,4 +1,4 @@
-# simpletope 0.2.1
+# simpletope 0.2.2
 > No more scripting required to integrate isotope into your website! This plugin uses HTML5 attributes rather then JS codes. It also supports hashes so you can directly link to a filter.
 
 ## Bower
