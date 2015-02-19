@@ -1,7 +1,7 @@
 /**
 * _setContainers: Set the filters/sorters/clear containers to the right Isotope container
 * @since 0.1.0
-* @updated 0.3.3
+* @updated 0.2.2
 * @param {object} $instance
 */
 
@@ -20,7 +20,7 @@ module.exports = function($instance) {
             dataType = this.dataType,
             filterContainer = $self.utils._getForContainerAndId.call($self, $elm, timestamp);
 
-        if( $self.guid === filterContainer.for || filterContainer.for === false) {
+        if( $self.guid === filterContainer.isFor || filterContainer.isFor === false) {
             if( dataType === "data-filter" ) {
                 sh.filterContainer[filterContainer.id] = filterContainer;
             } else if( dataType === "data-sort-by" ) {
@@ -36,12 +36,12 @@ module.exports = function($instance) {
             var filters = filterContainer.elm.find('['+dataType+']');
 
             filters.each(function(index, filter) {
-                if($self.guid === filterContainer.for) {
+                if($self.guid === filterContainer.isFor) {
                     if( $(filter).attr(dataType) !== "*" ) { //TODO: how to handle wildcard?
                         if( dataType === "data-filter" ) {
-                            $self.allFilters[filterContainer.for][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
+                            $self.allFilters[filterContainer.isFor][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
                         } else if( dataType === "data-sort-by" ) {
-                            $self.allSorters[filterContainer.for][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
+                            $self.allSorters[filterContainer.isFor][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
                         }
                     }
                 }

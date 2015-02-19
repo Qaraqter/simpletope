@@ -63,7 +63,7 @@ module.exports = function() {
                     $self.hash._setHash.call($self, $instance.isotope, $defaultFilter);
                 } else {
                     $instance.isotope.arrange({
-                        filter: $defaultFilter,
+                        filter: $defaultFilter
                         // sortBy: $defaultSort
                     });
 
@@ -474,6 +474,99 @@ module.exports = function($instance, $newHash) {
 };
 
 },{}],12:[function(require,module,exports){
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function(oThis) {
+    if (typeof this !== 'function') {
+      // closest thing possible to the ECMAScript 5
+      // internal IsCallable function
+      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+    }
+
+    var aArgs   = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        fNOP    = function() {},
+        fBound  = function() {
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+  };
+}
+
+if (!Function.prototype.trim) {
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+}
+
+if (!Array.prototype.indexOf) {
+  Array.prototype.indexOf = function(searchElement, fromIndex) {
+
+    var k;
+
+    // 1. Let O be the result of calling ToObject passing
+    //    the this value as the argument.
+    if (this == null) {
+      throw new TypeError('"this" is null or not defined');
+    }
+
+    var O = Object(this);
+
+    // 2. Let lenValue be the result of calling the Get
+    //    internal method of O with the argument "length".
+    // 3. Let len be ToUint32(lenValue).
+    var len = O.length >>> 0;
+
+    // 4. If len is 0, return -1.
+    if (len === 0) {
+      return -1;
+    }
+
+    // 5. If argument fromIndex was passed let n be
+    //    ToInteger(fromIndex); else let n be 0.
+    var n = +fromIndex || 0;
+
+    if (Math.abs(n) === Infinity) {
+      n = 0;
+    }
+
+    // 6. If n >= len, return -1.
+    if (n >= len) {
+      return -1;
+    }
+
+    // 7. If n >= 0, then Let k be n.
+    // 8. Else, n<0, Let k be len - abs(n).
+    //    If k is less than 0, then let k be 0.
+    k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+    // 9. Repeat, while k < len
+    while (k < len) {
+      // a. Let Pk be ToString(k).
+      //   This is implicit for LHS operands of the in operator
+      // b. Let kPresent be the result of calling the
+      //    HasProperty internal method of O with argument Pk.
+      //   This step can be combined with c
+      // c. If kPresent is true, then
+      //    i.  Let elementK be the result of calling the Get
+      //        internal method of O with the argument ToString(k).
+      //   ii.  Let same be the result of applying the
+      //        Strict Equality Comparison Algorithm to
+      //        searchElement and elementK.
+      //  iii.  If same is true, return k.
+      if (k in O && O[k] === searchElement) {
+        return k;
+      }
+      k++;
+    }
+    return -1;
+  };
+}
+
+},{}],13:[function(require,module,exports){
 var $ = window.jQuery;
 
 $.simpleIsotope = require("./constructor/prototype.js");
@@ -559,35 +652,7 @@ $(document).ready(function() {
     });
 });
 
-// Add bind support
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function(oThis) {
-    if (typeof this !== 'function') {
-      // closest thing possible to the ECMAScript 5
-      // internal IsCallable function
-      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
-    }
-
-    var aArgs   = Array.prototype.slice.call(arguments, 1),
-        fToBind = this,
-        fNOP    = function() {},
-        fBound  = function() {
-            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
-        };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
-}
-if (!Function.prototype.trim) {
-    String.prototype.trim = function() {
-        return this.replace(/^\s+|\s+$/g, '');
-    };
-}
-
-},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_createClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./filter/_check.js":6,"./filter/_createFilters.js":7,"./hash/_formatHash.js":8,"./hash/_getHash.js":9,"./hash/_onHashChanged.js":10,"./hash/_setHash.js":11,"./sorter/_check.js":13,"./sorter/_createSorters.js":14,"./text/_feedback.js":15,"./utils/_getElementFromDataAttribute.js":16,"./utils/_getFilterTest.js":17,"./utils/_getForContainerAndId.js":18,"./utils/_getInstances.js":19,"./utils/_getSortData.js":20,"./utils/_setContainers.js":21}],13:[function(require,module,exports){
+},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_createClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./filter/_check.js":6,"./filter/_createFilters.js":7,"./hash/_formatHash.js":8,"./hash/_getHash.js":9,"./hash/_onHashChanged.js":10,"./hash/_setHash.js":11,"./sorter/_check.js":14,"./sorter/_createSorters.js":15,"./text/_feedback.js":16,"./utils/_getElementFromDataAttribute.js":17,"./utils/_getFilterTest.js":18,"./utils/_getForContainerAndId.js":19,"./utils/_getInstances.js":20,"./utils/_getSortData.js":21,"./utils/_setContainers.js":22}],14:[function(require,module,exports){
 /**
  * _checkActive: Check if buttons need an active class
  * @since 0.1.0
@@ -638,7 +703,7 @@ module.exports = function($instance) {
 
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
 * _createButtons and add events to it
 * @since 0.1.0
@@ -736,7 +801,7 @@ module.exports = function() {
 
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function() {
     var $instance = this.instances[this.guid],
         $self = this;
@@ -751,7 +816,7 @@ module.exports = function() {
     });
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
 * _getElementFromDataAttribute
 * @since 0.1.0
@@ -786,7 +851,7 @@ module.exports = function(selector) {
     }
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = function(filter) {
     var $self = this;
 
@@ -846,7 +911,7 @@ module.exports = function(filter) {
 
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
 * _getForContainerAndId: Get an id or fallback to a parent div
 * @since 0.2.2
@@ -886,7 +951,7 @@ module.exports = function($elm, timestamp) {
         filterMethod = filterContainerMultiple || "or";
 
     return {
-        for: forElement || this.guid,
+        isFor: forElement || this.guid,
         id: idElement,
         elm: $(container),
         filterMultiple: filterMultiple,
@@ -895,7 +960,7 @@ module.exports = function($elm, timestamp) {
 
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /**
 * _getInstances
 * @since 0.1.0
@@ -910,7 +975,7 @@ module.exports =  function() {
     return tmp;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * _getSortData: Get the data-sort-by attributes and make them into an Isotope "getSortData" object
  * @since 0.1.0
@@ -938,11 +1003,11 @@ module.exports =  function() {
     return $sortData;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
 * _setContainers: Set the filters/sorters/clear containers to the right Isotope container
 * @since 0.1.0
-* @updated 0.3.3
+* @updated 0.2.2
 * @param {object} $instance
 */
 
@@ -961,7 +1026,7 @@ module.exports = function($instance) {
             dataType = this.dataType,
             filterContainer = $self.utils._getForContainerAndId.call($self, $elm, timestamp);
 
-        if( $self.guid === filterContainer.for || filterContainer.for === false) {
+        if( $self.guid === filterContainer.isFor || filterContainer.isFor === false) {
             if( dataType === "data-filter" ) {
                 sh.filterContainer[filterContainer.id] = filterContainer;
             } else if( dataType === "data-sort-by" ) {
@@ -977,12 +1042,12 @@ module.exports = function($instance) {
             var filters = filterContainer.elm.find('['+dataType+']');
 
             filters.each(function(index, filter) {
-                if($self.guid === filterContainer.for) {
+                if($self.guid === filterContainer.isFor) {
                     if( $(filter).attr(dataType) !== "*" ) { //TODO: how to handle wildcard?
                         if( dataType === "data-filter" ) {
-                            $self.allFilters[filterContainer.for][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
+                            $self.allFilters[filterContainer.isFor][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
                         } else if( dataType === "data-sort-by" ) {
-                            $self.allSorters[filterContainer.for][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
+                            $self.allSorters[filterContainer.isFor][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
                         }
                     }
                 }
@@ -991,5 +1056,5 @@ module.exports = function($instance) {
     }
 };
 
-},{}]},{},[12])(12)
+},{}]},{},[13,12])(13)
 });

@@ -53,7 +53,7 @@ You can specify filters by using the `data-filter` attribute on an element. The 
 #### Filter on class:
     <button data-filter=".metal">Metal</button>
 
-#### Filter on attribute value:
+#### Filter on data attribute value:
     <button data-filter="[data-category='transition']">Transition</button>
 
 ### Reset filters
@@ -62,16 +62,18 @@ To reset all filters you can specify the value `*` in the `data-filter` attribut
     <button data-filter="*" class="btn btn-default">All</button>
 
 ### Single or multiple filters
-By default the filters will only apply one filter. if you would like to have multiple filters applied then you can use `data-filter-type` attribute on the container of your items. The value of this attribute can be `multiple` or `single`.
+By default the filters will only apply one filter. if you would like to have multiple filters applied then you can use `data-filter-multiple` attribute on the container of your filters. The value of this attribute can be `or` or `and` (see Advanced filtering for more on `or` and `and`).
 
-    <div id="container" data-isotope data-filter-type="multiple">
+    <div id="filters" data-filter-multiple="or">
+        <button data-filter="*" class="btn btn-default">All</button>
         ...
     </div>
 
 ### Advanced filtering
 When using multiple filters then by default the filters will apply the filter(s) with the `or` statement, this means `blue` or `red` will be filtered, if you would like to filter on `blue` and `red` then you can specify the `data-filter-method` on the container of your items.
 
-    <div id="container" data-isotope data-filter-method="and">
+    <div id="filters" data-filter-multiple="and">
+        <button data-filter="*" class="btn btn-default">All</button>
         ...
     </div>
 
@@ -143,4 +145,4 @@ You can enable hash support by adding `data-hash` to the container of your items
     <div id="container" data-isotope data-hash>
 
 ## imagesLoaded
-[imagesLoaded](http://imagesloaded.desandro.com/) is supported, just include the script `imagesloaded.js` after loading `isotope.js`. 
+[imagesLoaded](http://imagesloaded.desandro.com/) is supported, just include the script `imagesloaded.js` after loading `isotope.js`.

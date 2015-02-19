@@ -18,7 +18,7 @@ module.exports = function() {
                     $self.hash._setHash.call($self, $instance.isotope, $defaultFilter);
                 } else {
                     $instance.isotope.arrange({
-                        filter: $defaultFilter,
+                        filter: $defaultFilter
                         // sortBy: $defaultSort
                     });
 

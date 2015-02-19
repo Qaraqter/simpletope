@@ -37,7 +37,7 @@ module.exports = function($elm, timestamp) {
         filterMethod = filterContainerMultiple || "or";
 
     return {
-        for: forElement || this.guid,
+        isFor: forElement || this.guid,
         id: idElement,
         elm: $(container),
         filterMultiple: filterMultiple,
