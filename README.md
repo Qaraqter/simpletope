@@ -8,7 +8,7 @@ Install with Bower: ``bower install simpletope``
 [See here for more info](https://github.com/Qaraqter/simpletope/blob/master/DOCUMENTATION.md)
 
 ## Examples
-There are 3 examples found in [examples/single](https://github.com/Qaraqter/simpletope/tree/master/examples/single), [examples/multiple](https://github.com/Qaraqter/simpletope/tree/master/examples/multiple) and [examples/hash](https://github.com/Qaraqter/simpletope/tree/master/examples/hash).
+There are 4 examples found in [examples/single](https://github.com/Qaraqter/simpletope/tree/master/examples/single), [examples/multiple](https://github.com/Qaraqter/simpletope/tree/master/examples/multiple), [examples/hash](https://github.com/Qaraqter/simpletope/tree/master/examples/hash) and [examples/chain](https://github.com/Qaraqter/simpletope/tree/master/examples/chain).
 
 # Using this repo
 ## NodeJS
