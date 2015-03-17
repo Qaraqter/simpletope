@@ -72,9 +72,9 @@
 
                 <div id="results" class="random" data-isotope data-layout="packery">
 
-                    <section class="item col-xs-6 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
+                    <section class="item col-xs-6 brown" data-date="20141020" data-category="Game, Test" data-colour="brown"><span></span></section>
                     <section class="item col-xs-4 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
-                    <section class="item col-xs-2 blue" data-date="20140808" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-2 blue" data-date="20140808" data-category="Arts, Test" data-colour="blue"><span></span></section>
                     <section class="item col-xs-4 brown" data-date="20140806" data-category="Science" data-colour="blue"><span></span></section>
                     <section class="item col-xs-2 black" data-date="20140801" data-category="Game" data-colour="blue"><span></span></section>
                     <section class="item col-xs-4 blue bigger" data-date="20140725" data-category="Arts" data-colour="blue"><span></span></section>
@@ -95,18 +95,19 @@
 
                 <div class="row">
 
-                    <div id="filters2" class="col-sm-8" data-isotope-container="results2">
+                    <div id="filters2" class="col-sm-8" data-filter-multiple="and" data-isotope-container="results2">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
                             <button data-filter="[data-category='Arts']" class="btn btn-default"><i class="fa fa-paint-brush"></i></button>
                             <button data-filter="[data-category='Game']" class="btn btn-default"><i class="fa fa-gamepad"></i></button>
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
+                            <button data-filter="[data-category='Test']" class="btn btn-default">Test</button>
                         </div>
                         <div data-clear-filter data-isotope-container="results2" class="close hide"><i class="fa fa-close"></i> Clear filters</div>
                     </div>
 
-                    <div id="sorters2" class="col-sm-4" data-filter-type="multiple" data-isotope-container="results2">
+                    <div id="sorters2" class="col-sm-4" data-filter-multiple="and" data-isotope-container="results2">
                         <label>Sort by date:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-sort-by="date" data-sort-selector="[data-date]" data-sort-direction="desc" class="btn btn-default"><i class="fa fa-arrow-up"></i></button>
@@ -116,11 +117,11 @@
 
                 </div>
 
-                <div id="results2" class="random" data-isotope data-filter-method="or" data-layout="packery">
+                <div id="results2" class="random" data-isotope data-layout="packery">
 
-                    <section class="item col-xs-2 brown" data-date="20141020" data-category="Game" data-colour="brown"><span></span></section>
+                    <section class="item col-xs-2 brown" data-date="20141020" data-category="Game, Test" data-colour="brown"><span></span></section>
                     <section class="item col-xs-6 black bigger" data-date="20141014" data-category="Science" data-colour="black"><span></span></section>
-                    <section class="item col-xs-4 blue" data-date="20140808" data-category="Arts" data-colour="blue"><span></span></section>
+                    <section class="item col-xs-4 blue" data-date="20140808" data-category="Arts, Test" data-colour="blue"><span></span></section>
                     <section class="item col-xs-4 brown" data-date="20140806" data-category="Science" data-colour="blue"><span></span></section>
                     <section class="item col-xs-6 black" data-date="20140801" data-category="Game" data-colour="blue"><span></span></section>
                     <section class="item col-xs-2 blue bigger" data-date="20140725" data-category="Arts" data-colour="blue"><span></span></section>

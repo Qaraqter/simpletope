@@ -1,5 +1,6 @@
 module.exports = function(filter) {
-    var $self = this;
+    var guid = this.guid,
+        allFilters = this.allFilters[guid];
 
     return function( item ) {
 
@@ -36,7 +37,7 @@ module.exports = function(filter) {
         if(filters.indexOf("*") === -1) {
 
             $.each(filters, function(idx, elm) {
-                if($self.allFilters[$self.guid][elm].filterMethod === "or") {
+                if(allFilters[elm].filterMethod === "or") {
                     filterMethod = "or";
                 } else {
                     filterMethod = "and";

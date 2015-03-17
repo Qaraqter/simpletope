@@ -1,6 +1,6 @@
 {
   "name": "simpleIsotope",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Simplified filter and sort magical layouts",
   "dependencies": {
     "browserify": "^8.1.3",
@@ -14,7 +14,7 @@
     "build-main": "browserify source/simpletope.amd.js source/polyfills.js -s simpleIsotope > build/simpletope.js",
     "build-min": "browserify source/simpletope.amd.js source/polyfills.js -s simpleIsotope | uglifyjs -c > build/simpletope.min.js",
     "build": "npm run build-main && npm run build-min && npm run build-dev",
-    "watch": "watchify source/simpletope.amd.js -d -s simpleIsotope -o build/simpletope.dev.js -v"
+    "watch": "watchify source/simpletope.amd.js source/polyfills.js  -d -s simpleIsotope -o build/simpletope.dev.js -v"
   },
   "repository": {
     "type": "git",

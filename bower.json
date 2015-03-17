@@ -1,6 +1,6 @@
 {
   "name": "simpleIsotope",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Simplified filter and sort magical layouts",
   "main": [
     "build/simpletope.js",
