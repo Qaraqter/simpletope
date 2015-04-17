@@ -16,7 +16,6 @@ module.exports = function(){
                 dataSelectors: {
                     filter: 'data-filter',
                     type: 'data-filter-type',
-                    filterMethod: 'data-filter-method',//Depracated
                     filterMultiple: 'data-filter-multiple',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
@@ -38,13 +37,13 @@ module.exports = function(){
         instances.push(new $.simpleIsotope($.extend(obj, $args)));
     });
 
-    $.each(instances, function(idx, elm) {
-        elm.sorter._createButtons.call(elm);
-        elm.filter._createButtons.call(elm);
-        elm.clear._createButtons.call(elm);
-        elm.text._feedback.call(elm);
-        elm.clear.__check.call(elm);
-    });
+    // $.each(instances, function(idx, elm) {
+    //     elm.sorter._createButtons.call(elm);
+    //     elm.filter._createButtons.call(elm);
+    //     elm.clear._createButtons.call(elm);
+    //     elm.text._feedback.call(elm);
+    //     elm.clear.__check.call(elm);
+    // });
 
     return instances;
 

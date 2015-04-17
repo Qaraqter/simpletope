@@ -7,16 +7,8 @@ module.exports = function($args){
     this.guid = this.container.attr("id") || new Date().getTime();
     this.encodeURI = false;
 
-    this.allFilters[this.guid] = this.allFilters[this.guid] || {};
-    this.allSorters[this.guid] = this.allSorters[this.guid] || {};
-
-    //First time init isotope
     this.instances[this.guid] = {
-        isotope: false,
-        filterContainer: {},
-        sortContainer: {},
-        clearContainer: {},
-        feedbackContainer: {}
+        isotope: false
     };
 
     //Add hash support
@@ -29,15 +21,28 @@ module.exports = function($args){
     }
 
     //Get containers of filters
-    this.utils._setContainers.call(this, this.instances[this.guid].isotope);
+    // this.utils._setContainers.call(this, this.instances[this.guid].isotope);
 
+    //First time init isotope
     this.instances[this.guid].isotope = new Isotope(this.container.context, {
         filter: theHash || "*",
         itemSelector: $self.settings.itemSelector || '.item',
         layoutMode: $self.container.data("layout") || "fitRows",
         getSortData: $self.utils._getSortData.call(this),
-        getFilterTest: $self.utils._getFilterTest.call(this)
+        getFilterTest: $self.utils._getFilterTest.call(this),
     });
+
+    // Check if this is a multiple filter
+    this.instances[this.guid].isotope.isMultiple = this.container.attr(this.settings.dataSelectors.filterMultiple) || false;
+
+    //Add events to Filters and Sorters
+    this.events._attach.call(this, this.instances[this.guid].isotope);
+
+    // Init clear
+    this.clear._initClearers.call(this, this.instances[this.guid], this.eventElements.clear);
+
+    // Init feedback
+    this.text._feedback.call(this, this.instances[this.guid]);
 
     this.instances[this.guid].isotope.__getFilterTest = this.instances[this.guid].isotope._getFilterTest;
     this.instances[this.guid].isotope._getFilterTest = this.utils._getFilterTest.bind(this);

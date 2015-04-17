@@ -1,3 +1,7 @@
+jQuery.fn.exists = function(){
+    return (this.length > 0) ? this : false;
+};
+
 if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
     if (typeof this !== 'function') {

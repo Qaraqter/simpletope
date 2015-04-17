@@ -14,7 +14,7 @@ module.exports = function() {
 * @param {string} $instance
 */
 
-module.exports = function($instance) {
+module.exports = function(instance) {
 
     var $clearFilter = this.settings.dataSelectors.clearFilter,
         $defaultSort = this.settings.defaults.sort,
@@ -22,57 +22,50 @@ module.exports = function($instance) {
         $dataFilter = this.settings.dataSelectors.filter,
         $dataSortBy = this.settings.dataSelectors.sortBy,
         $activeClass = this.settings.defaults.classNames.active,
-        $instance = this.instances[this.guid],
-        $self = this;
+        $instance = instance || this.instances[this.guid],
+        $history = $instance.isotope.sortHistory,
 
-    $.each($instance.clearContainer, function(key, container) {
+        forContainerFull = this.settings.dataSelectors.forContainer + '="' + this.container.attr("id") + '"',
 
-        container.elm.each(function(idx, elm) {
-            var $elm = $(elm),
-                $history = $instance.isotope.sortHistory;
+        theClearer = $('[' + forContainerFull + '][' + $clearFilter + ']').exists() || $('[' + $clearFilter + ']'),
 
-            if($instance.isotope.options.filter != $defaultFilter || $history[$history.length - 1] != $defaultSort) {
-                $elm.removeClass("hide").show();
-            } else {
-                $elm.hide();
-            }
+        $elm = $(theClearer);
 
-        });
-    });
+
+    if($instance.isotope.options.filter != $defaultFilter || $history[$history.length - 1] != $defaultSort) {
+        $elm.removeClass("hide").show();
+    } else {
+        $elm.hide();
+    }
 
 };
 
 },{}],3:[function(require,module,exports){
-module.exports = function() {
+module.exports = function(instance, elements) {
     var $clearFilter = this.settings.dataSelectors.clearFilter,
         $defaultSort = this.settings.defaults.sort,
         $defaultFilter = this.settings.defaults.filter,
         $instance = this.instances[this.guid],
         $self = this;
 
-    $.each($instance.clearContainer, function(key, container) {
-        var $clearers = container.elm;
+    $.each(elements, function(idx, elm) {
+        var $elm = $(elm);
 
-        $clearers.each(function(idx, elm) {
-            var $elm = $(elm);
+        $elm.hide().removeClass("hide").on('click', function(e) {
+            e.preventDefault();
 
-            $elm.hide().removeClass("hide").on('click', function(e) {
-                e.preventDefault();
+            if($self.useHash === true) {
+                $self.hash._setHash.call($self, $instance.isotope, $defaultFilter);
+            } else {
+                $instance.isotope.arrange({
+                    filter: $defaultFilter
+                    // sortBy: $defaultSort
+                });
 
-                if($self.useHash === true) {
-                    $self.hash._setHash.call($self, $instance.isotope, $defaultFilter);
-                } else {
-                    $instance.isotope.arrange({
-                        filter: $defaultFilter
-                        // sortBy: $defaultSort
-                    });
+                $self._onIsotopeChange.call($self, $instance);
+            }
 
-                    $self._onIsotopeChange.call($self, $instance);
-                }
-
-                $elm.hide();
-            });
-
+            $elm.hide();
         });
     });
 };
@@ -96,7 +89,6 @@ module.exports = function(){
                 dataSelectors: {
                     filter: 'data-filter',
                     type: 'data-filter-type',
-                    filterMethod: 'data-filter-method',//Depracated
                     filterMultiple: 'data-filter-multiple',
                     sortBy: 'data-sort-by',
                     sortBySelector: 'data-sort-selector',
@@ -118,13 +110,13 @@ module.exports = function(){
         instances.push(new $.simpleIsotope($.extend(obj, $args)));
     });
 
-    $.each(instances, function(idx, elm) {
-        elm.sorter._createButtons.call(elm);
-        elm.filter._createButtons.call(elm);
-        elm.clear._createButtons.call(elm);
-        elm.text._feedback.call(elm);
-        elm.clear.__check.call(elm);
-    });
+    // $.each(instances, function(idx, elm) {
+    //     elm.sorter._createButtons.call(elm);
+    //     elm.filter._createButtons.call(elm);
+    //     elm.clear._createButtons.call(elm);
+    //     elm.text._feedback.call(elm);
+    //     elm.clear.__check.call(elm);
+    // });
 
     return instances;
 
@@ -140,16 +132,8 @@ module.exports = function($args){
     this.guid = this.container.attr("id") || new Date().getTime();
     this.encodeURI = false;
 
-    this.allFilters[this.guid] = this.allFilters[this.guid] || {};
-    this.allSorters[this.guid] = this.allSorters[this.guid] || {};
-
-    //First time init isotope
     this.instances[this.guid] = {
-        isotope: false,
-        filterContainer: {},
-        sortContainer: {},
-        clearContainer: {},
-        feedbackContainer: {}
+        isotope: false
     };
 
     //Add hash support
@@ -162,15 +146,28 @@ module.exports = function($args){
     }
 
     //Get containers of filters
-    this.utils._setContainers.call(this, this.instances[this.guid].isotope);
+    // this.utils._setContainers.call(this, this.instances[this.guid].isotope);
 
+    //First time init isotope
     this.instances[this.guid].isotope = new Isotope(this.container.context, {
         filter: theHash || "*",
         itemSelector: $self.settings.itemSelector || '.item',
         layoutMode: $self.container.data("layout") || "fitRows",
         getSortData: $self.utils._getSortData.call(this),
-        getFilterTest: $self.utils._getFilterTest.call(this)
+        getFilterTest: $self.utils._getFilterTest.call(this),
     });
+
+    // Check if this is a multiple filter
+    this.instances[this.guid].isotope.isMultiple = this.container.attr(this.settings.dataSelectors.filterMultiple) || false;
+
+    //Add events to Filters and Sorters
+    this.events._attach.call(this, this.instances[this.guid].isotope);
+
+    // Init clear
+    this.clear._initClearers.call(this, this.instances[this.guid], this.eventElements.clear);
+
+    // Init feedback
+    this.text._feedback.call(this, this.instances[this.guid]);
 
     this.instances[this.guid].isotope.__getFilterTest = this.instances[this.guid].isotope._getFilterTest;
     this.instances[this.guid].isotope._getFilterTest = this.utils._getFilterTest.bind(this);
@@ -185,158 +182,211 @@ module.exports = function($args){
 
 },{}],6:[function(require,module,exports){
 /**
- * _checkActive: Check if buttons need an active class
- * @since 0.1.0
- * @param {object} $instance
- */
+* _attach: Attach click events to filters, sorters, feedback, clear
+* @since 0.2.4
+* @param {object} $instance
+*/
 
 module.exports = function($instance) {
+    var $self = this,
+        instance = $self.instances[$self.guid],
+        timestamp = new Date().getTime(),
 
-    var $dataFilter = this.settings.dataSelectors.filter,
-        $defaultFilter = this.settings.defaults.filter,
-        $instance = $instance || this.instances[this.guid],
-        $activeClass = this.settings.defaults.classNames.active;
+        forContainerFull = $self.settings.dataSelectors.forContainer + '="' + this.container.attr("id") + '"',
 
-    $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
+        clicked = function(e) {
+            e.preventDefault();
 
-        $.each($instance.filterContainer, function( idx, container ) {
-            var elm = container.elm.find("["+$dataFilter+"=\""+filter+"\"]");
+            var $elm = $(e.delegateTarget);
 
-            if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
+            // If element is SELECT, get selected
+            if(e.type == "change") {
+                $elm = $elm.find('option:selected');
+            }
 
-                elm.attr('selected','selected');
+            if( $elm.is('[' + $self.settings.dataSelectors.filter + ']') ) {
 
-            } else {
+                $self.filter._initFilters.call($self, $elm);
 
-                if(index === 0) {
-                    //Remove all active classes first time
-                    container.elm.find("["+$dataFilter+"]").removeClass($activeClass);
-                }
+            } else if( $elm.is('[' + $self.settings.dataSelectors.sortBy + ']') ) {
 
-                //Add active classes
-                var active = elm.addClass($activeClass);
-
-                if(active.length > 0 && filter != $defaultFilter) {
-                    container.elm.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
-                }
+                $self.sorter._initSorters.call($self, $elm);
 
             }
-        });
+        };
 
-    });
+    // Lets first check if anything is tied to an instance
+    this.eventElements = {
+        filters: $('[' + forContainerFull + '] [' + $self.settings.dataSelectors.filter + ']').exists() || $('[' + $self.settings.dataSelectors.filter + ']'),
+        sorters: $('[' + forContainerFull + '] [' + $self.settings.dataSelectors.sortBy + ']').exists() || $('[' + $self.settings.dataSelectors.sortBy + ']'),
+        clear: $('[' + forContainerFull + '][' + $self.settings.dataSelectors.clearFilter + ']').exists() || $('[' + $self.settings.dataSelectors.clearFilter + ']'),
+        feedback: $('[' + forContainerFull + '] [' + $self.settings.dataSelectors.feedback + ']').exists() || $('[' + $self.settings.dataSelectors.feedback + ']'),
+
+        all: {}
+    };
+
+    // Combine results to one jQuery object
+    this.eventElements.all = this.eventElements.filters.add(this.eventElements.sorters);
+
+    // Add the events
+    this.eventElements.all.off('click').on('click', clicked);
+    this.eventElements.all.parent('select').off('change').on('change', clicked);
 
 };
 
 },{}],7:[function(require,module,exports){
 /**
-* _createFilters: create buttons and add events to it
-* @since 0.1.0
-* @updated 0.2.1
+* _checkFilters: create buttons and add events to it
+* @updated 0.2.4
+* @param {object} $filter
 */
 
-module.exports = function() {
-    var $dataFilter = this.settings.dataSelectors.filter,
+module.exports = function($elm) {
+    var $self = this,
+        $dataFilter = this.settings.dataSelectors.filter,
+        $dataChain = this.settings.dataSelectors.filterChain,
         $instance = this.instances[this.guid],
-        $self = this;
 
-    $.each($instance.filterContainer, function(key, container) {
-        var $filters = container.elm.find('['+$dataFilter+']');
+        $dataChainAttr = $elm.closest('[' + $dataChain + ']'),
+        $dataFilterAttr = $elm.attr($dataFilter),
 
-        $filters.each(function(idx, elm) {
-            var $elm = $(elm),
-                how = {
-                    eventName: $elm.prop("tagName").toLowerCase() == "option" ? "change" : "click",
-                    element: $elm.prop("tagName").toLowerCase() == "option" ? $elm.closest("select") : $elm
-                };
+        newFilters = $dataFilterAttr,
+        $filterValue = $dataFilterAttr,
 
-            how.element.on(how.eventName, function(e) {
-                e.preventDefault();
+        chainGroupName = $instance.isotope.isGrouped || "*",
 
-                // TODO: Do not return false before setting isotope filters
-                if(how.eventName == "change") {
-                    if(how.element.find('option:selected')[0] != elm) {
-                        return false;
+        activeFilters, currentFilters;
+
+    if(this.useHash === true) {
+
+        this.hash._setHash.call(this, $instance.isotope, $filterValue);
+
+    } else {
+
+        // Get current active filters from isotope instance
+        activeFilters = $instance.isotope.options.filter;
+
+        // Check if clicked filter's value is not a wildcard
+        if(activeFilters !== "*" && $filterValue !== "*") {
+            activeFilters = activeFilters.split(",");
+            newFilters = [];
+
+            //Loop through all active filters
+            $.each(activeFilters, function(index, element) {
+
+                //Check if this container allows multiple filters
+                if($instance.isotope.isMultiple) {
+
+                    newFilters.push(element);
+
+                } else {//Container only allows one filter
+
+                    var container = $elm.closest('ul');//Check if parent has an UL
+                        container = (container.length === 0) ? $elm.closest('select') : container;//Check if select
+                        container = (container.length === 0) ? $elm.parent() : container;//Check if select
+
+                    //Pass on filters that are not in same container
+                    if( container.find('[' + $dataFilter + '="' + element + '"]').length === 0 || element === $filterValue ) {
+                        newFilters.push(element);
                     }
                 }
-
-                var $dataFilterAttr = $elm.attr($dataFilter),
-                    $filterValue = $dataFilterAttr,
-                    newFilters = $dataFilterAttr,
-                    activeFilters, currentFilters;
-
-                if($self.useHash === true) {
-
-                    $self.hash._setHash.call($self, $instance.isotope, $filterValue);
-
-                } else {
-
-                    // Get current active filters from isotope instance
-                    activeFilters = $instance.isotope.options.filter;
-
-                    // Check if clicked filter's value is not a wildcard
-                    if(activeFilters !== "*" && $filterValue !== "*") {
-                        activeFilters = activeFilters.split(",");
-                        newFilters = [];
-
-                        //Loop through all active filters
-                        $.each(activeFilters, function(index, element) {
-                            var setting = $self.allFilters[$self.guid][element];
-
-                            //Check if this container allows multiple filters
-                            if(setting.filterMultiple) {
-                                newFilters.push(element);
-
-                            //Container only allows one filter
-                            } else {
-
-                                //Pass on filters that are not in same container
-                                if(container.elm !== setting.elm) {
-                                    newFilters.push(element);
-                                }
-                            }
-                        });
-
-                        //Check if this container allows multiple filters
-                        if(container.filterMultiple) {
-
-                            //Check if filter is already defined, if so toggle it
-                            if( newFilters.indexOf($filterValue) === -1 ) {
-                                newFilters.push($filterValue);
-                            } else {
-                                newFilters.splice(newFilters.indexOf($filterValue), 1);
-                            }
-
-                        //Container only allows one filter
-                        } else {
-
-                            //Pass on the clicked value
-                            newFilters.push($filterValue);
-                        }
-
-                        newFilters = newFilters.join(",");
-
-                    }
-
-                    //If filters is empty then reset it all
-                    if(newFilters === "") {
-                        newFilters = "*";
-                    }
-
-                    $instance.isotope.arrange({
-                        filter: newFilters
-                    });
-
-                    $self._onIsotopeChange.call($self, $instance);
-                }
-
             });
 
+            if( newFilters.indexOf($filterValue) === -1 ) {
+                newFilters.push($filterValue);
+            } else {
+                newFilters.splice(newFilters.indexOf($filterValue), 1);
+            }
+
+            newFilters = newFilters.join(",");
+
+        }
+
+        //If filters is empty then reset it all
+        if(newFilters === "") {
+            newFilters = "*";
+        }
+
+        $instance.isotope.arrange({
+            filter: newFilters
         });
 
-    });
+        this._onIsotopeChange.call(this, $instance);
+    }
+
 };
 
 },{}],8:[function(require,module,exports){
+/**
+ * _checkActive: Check if buttons need an active class
+ * @since 0.1.0
+ * @param {object} $instance
+ */
+
+module.exports = function($instance, elm) {
+
+    var $dataFilter = this.settings.dataSelectors.filter,
+        $defaultFilter = this.settings.defaults.filter,
+        $instance = $instance || this.instances[this.guid],
+        $activeClass = this.settings.defaults.classNames.active,
+
+        forContainerFull = this.settings.dataSelectors.forContainer + '="' + this.container.attr("id") + '"';
+
+    $.each($instance.isotope.options.filter.split(","), function( index, filter ) {
+
+        var theFilter = $('[' + forContainerFull + '] [' + $dataFilter + '="' + filter + '"]').exists() || $('[' + $dataFilter + '="' + filter + '"]'),
+            allFilters = $('[' + forContainerFull + '] [' + $dataFilter + ']').exists() || $('[' + $dataFilter + ']'),
+            defaultFilter =  $('[' + forContainerFull + '] [' + $dataFilter + '="' + $defaultFilter + '"]').exists() || $('[' + $dataFilter + '="' + $defaultFilter + '"]');
+
+        if(theFilter.prop("tagName") && theFilter.prop("tagName").toLowerCase() === "option") {
+
+            theFilter.attr('selected','selected');
+
+        } else {
+
+            if(index === 0) {
+                //Remove all active classes first time
+                allFilters.removeClass($activeClass);
+            }
+
+            //Add active classes
+            var active = theFilter.addClass($activeClass);
+
+            if(active.length > 0 && filter != $defaultFilter) {
+                defaultFilter.removeClass($activeClass);
+            }
+
+        }
+
+        // $.each($instance.filterContainer, function( idx, container ) {
+        //     var elm = container.elm.find("["+$dataFilter+"=\""+filter+"\"]");
+        //
+        //     if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
+        //
+        //         elm.attr('selected','selected');
+        //
+        //     } else {
+        //
+        //         if(index === 0) {
+        //             //Remove all active classes first time
+        //             container.elm.find("["+$dataFilter+"]").removeClass($activeClass);
+        //         }
+        //
+        //         //Add active classes
+        //         var active = elm.addClass($activeClass);
+        //
+        //         if(active.length > 0 && filter != $defaultFilter) {
+        //             container.elm.find("["+$dataFilter+"=\""+$defaultFilter+"\"]").removeClass($activeClass);
+        //         }
+        //
+        //     }
+        // });
+
+    });
+
+};
+
+},{}],9:[function(require,module,exports){
 /**
 * _formatHash: Format multiple filters into one string based on a regular expression
 * @since 0.1.0
@@ -370,7 +420,7 @@ module.exports = function(re, str) {
     return matches;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * _getHash: Get window.location.hash and format it for Isotope
  * @since 0.1.0
@@ -421,7 +471,7 @@ module.exports = function(re, str) {
 
  };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
 * _onHashChange: fires when location.hash has been changed
 * @since 0.1.0
@@ -430,7 +480,7 @@ module.exports = function() {
     this._setIsotope.call(this, this.hash._getHash.call(this));
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * _setHash: Set a new location.hash after formatting it
  * @since 0.1.0
@@ -475,7 +525,11 @@ module.exports = function($instance, $newHash) {
     return $endHash;
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
+jQuery.fn.exists = function(){
+    return (this.length > 0) ? this : false;
+};
+
 if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
     if (typeof this !== 'function') {
@@ -568,7 +622,7 @@ if (!Array.prototype.indexOf) {
   };
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var $ = window.jQuery;
 
 $.simpleIsotope = require("./constructor/prototype.js");
@@ -587,26 +641,29 @@ $.simpleIsotope.prototype = {
         _onHashChanged: require("./hash/_onHashChanged.js")
     },
     filter: {
-        _createButtons: require("./filter/_createFilters.js"),
-        _check: require("./filter/_check.js")
+        _initFilters: require("./filter/_initFilters.js"),
+        _setActiveClass: require("./filter/_setActiveClass.js")
     },
     sorter: {
-        _createButtons: require("./sorter/_createSorters.js"),
-        _check: require("./sorter/_check.js")
+        _initSorters: require("./sorter/_initSorters.js"),
+        _setActiveClass: require("./sorter/_setActiveClass.js")
     },
     clear: {
-        _createButtons: require("./clear/_createClearers.js"),
+        _initClearers: require("./clear/_initClearers.js"),
         _check: require("./clear/_check.js"),
         __check: require("./clear/__check.js")
     },
     text: {
         _feedback: require("./text/_feedback.js")
     },
+    events: {
+        _attach: require("./events/_attach.js")
+    },
     utils: {
-        _setContainers: require("./utils/_setContainers.js"),
-        _getForContainerAndId: require("./utils/_getForContainerAndId.js"),
+        // _setContainers: require("./utils/_setContainers.js"),
+        // _getForContainerAndId: require("./utils/_getForContainerAndId.js"),
+        // _getElementFromDataAttribute: require("./utils/_getElementFromDataAttribute.js"),
         _getSortData: require("./utils/_getSortData.js"),
-        _getElementFromDataAttribute: require("./utils/_getElementFromDataAttribute.js"),
         _getFilterTest: require("./utils/_getFilterTest.js"),
         _getInstances: require("./utils/_getInstances.js")
     },
@@ -624,11 +681,11 @@ $.simpleIsotope.prototype = {
     * @param {string} $instance
     */
     _onIsotopeChange: function($instance) {
-        this.filter._check.call(this, $instance);
-        this.sorter._check.call(this, $instance);
+        this.filter._setActiveClass.call(this, $instance);
+        this.sorter._setActiveClass.call(this, $instance);
 
-        this.clear._check.call(this, $instance.isotope);
-        this.text._feedback.call(this, $instance.isotope);
+        this.clear._check.call(this, $instance);
+        this.text._feedback.call(this, $instance);
     },
 
     /**
@@ -654,209 +711,148 @@ $(document).ready(function() {
     });
 });
 
-},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_createClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./filter/_check.js":6,"./filter/_createFilters.js":7,"./hash/_formatHash.js":8,"./hash/_getHash.js":9,"./hash/_onHashChanged.js":10,"./hash/_setHash.js":11,"./sorter/_check.js":14,"./sorter/_createSorters.js":15,"./text/_feedback.js":16,"./utils/_getElementFromDataAttribute.js":17,"./utils/_getFilterTest.js":18,"./utils/_getForContainerAndId.js":19,"./utils/_getInstances.js":20,"./utils/_getSortData.js":21,"./utils/_setContainers.js":22}],14:[function(require,module,exports){
+},{"./clear/__check.js":1,"./clear/_check.js":2,"./clear/_initClearers.js":3,"./constructor/jquery.js":4,"./constructor/prototype.js":5,"./events/_attach.js":6,"./filter/_initFilters.js":7,"./filter/_setActiveClass.js":8,"./hash/_formatHash.js":9,"./hash/_getHash.js":10,"./hash/_onHashChanged.js":11,"./hash/_setHash.js":12,"./sorter/_initSorters.js":15,"./sorter/_setActiveClass.js":16,"./text/_feedback.js":17,"./utils/_getFilterTest.js":18,"./utils/_getInstances.js":19,"./utils/_getSortData.js":20}],15:[function(require,module,exports){
+/**
+* _checkSort: create buttons and add events to it
+* @updated 0.2.4
+* @param {object} $filter
+*/
+
+module.exports = function($elm) {
+    var $self = this,
+        $dataSortBy = this.settings.dataSelectors.sortBy,
+        $dataSortDirection = this.settings.dataSelectors.sortDirection,
+        $defaultSort = this.settings.defaults.sort,
+        $sortArray = [],
+        $instance = this.instances[this.guid],
+
+        $sortByValue = '',
+        $sortAsc = false,
+        $dataSortAttr = $elm.attr($dataSortBy);
+
+    // TODO: I'm ganna leave this code here for now, if we ever need to add multiple support on sorters
+    // if($self.filterMultiple) {
+    //
+    //     $sortByValue = [];
+    //
+    //     if($dataSortAttr == $defaultSort) {
+    //
+    //         $sortArray = [];
+    //
+    //     } else {
+    //
+    //         if($sortArray.indexOf($dataSortAttr) === -1) {//item not filtered
+    //
+    //             $sortArray.push($dataSortAttr);
+    //
+    //         } else {//item already filtered
+    //
+    //             if($instance.isotope.options.sortAscending !== ($elm.attr($dataSortDirection).toLowerCase() === "asc")) {//Are we changing desc or asc?
+    //                 //Do nothing, array will be the same, we're only chanigng sort direction
+    //             } else {
+    //                 $sortArray.splice($sortArray.indexOf($dataSortAttr), 1); //same item filtered, remove this item from array
+    //             }
+    //         }
+    //
+    //     }
+    //
+    //     if($sortArray.length === 0) {
+    //         $sortByValue = $defaultSort;
+    //     } else {
+    //         $sortByValue = $sortArray;
+    //     }
+    //
+    // } else {
+    //     $sortByValue = $dataSortAttr;
+    // }
+
+    $sortByValue = $dataSortAttr;
+
+    if($elm.attr($dataSortDirection) !== null && $elm.attr($dataSortDirection) !== undefined) {
+        if($elm.attr($dataSortDirection).toLowerCase() === "asc") {
+            $sortAsc = true;
+        }
+    }
+
+    if($elm.attr($dataSortBy) == $defaultSort) {
+        $sortAsc = true;
+    }
+
+    $instance.isotope.arrange({
+        sortBy: $sortByValue,
+        sortAscending: $sortAsc
+    });
+
+    $self._onIsotopeChange.call($self, $instance);
+
+};
+
+},{}],16:[function(require,module,exports){
 /**
  * _checkActive: Check if buttons need an active class
  * @since 0.1.0
  * @param {object} $instance
  */
 
-module.exports = function($instance) {
+module.exports = function(instance) {
 
     var $dataSort = this.settings.dataSelectors.sortBy,
         $defaultSort = this.settings.defaults.sort,
-        $instance = $instance || this.instances[this.guid],
+        $instance = instance || this.instances[this.guid],
         $activeClass = this.settings.defaults.classNames.active,
         $sortHistory = $instance.isotope.sortHistory,
-        $sortAscending = $instance.isotope.options.sortAscending;
+        $sortAscending = $instance.isotope.options.sortAscending,
 
-    $.each($instance.sortContainer, function( idx, container ) {
-        var elm = container.elm.find("["+$dataSort+"]"),
-            sortDirection = "desc";
+        forContainerFull = this.settings.dataSelectors.forContainer + '="' + this.container.attr("id") + '"',
+        sortDirection = "desc";
 
-        if($sortAscending) {
-            sortDirection = "asc";
-        }
+    if($sortAscending) {
+        sortDirection = "asc";
+    }
 
-        if(elm.prop("tagName") && elm.prop("tagName").toLowerCase() === "option") {
+    var theSorter = $('[' + forContainerFull + '] [' + $dataSort + '="' + $sortHistory[0] + '"][data-sort-direction="' + sortDirection + '"]').exists() || $('[' + $dataSort + '="' + $sortHistory[0] + '"][data-sort-direction="' + sortDirection + '"]'),
+        allSorters = $('[' + forContainerFull + '] [' + $dataSort + ']').exists() || $('[' + $dataSort + ']'),
+        defaultSorter =  $('[' + forContainerFull + '] [' + $dataSort + '="' + $defaultSort + '"]').exists() || $('[' + $dataSort + '="' + $defaultSort + '"]');
 
-            // elm.prop('selected', false);
-            // var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').prop('selected', 'selected');
-            //
-            // console.log(active);
+    if(theSorter.prop("tagName") && theSorter.prop("tagName").toLowerCase() === "option") {
 
+    } else {
+
+        //Remove all active classes first time
+        allSorters.removeClass($activeClass);
+
+        //Add active classes
+        var active = theSorter.addClass($activeClass);
+
+        if(active.length > 0 && $sortHistory[0] != $defaultSort) {
+            defaultSorter.removeClass($activeClass);
         } else {
-
-
-            //Remove all active classes first time
-            elm.removeClass($activeClass);
-
-            //Add active classes
-            var active = container.elm.find('['+$dataSort+'="'+ $sortHistory[0] +'"][data-sort-direction="' + sortDirection + '"]').addClass($activeClass);
-
-            if(active.length > 0 && $sortHistory[0] != $defaultSort) {
-                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").removeClass($activeClass);
-            } else {
-                container.elm.find("["+$dataSort+"=\""+$defaultSort+"\"]").addClass($activeClass);
-            }
+            defaultSorter.addClass($activeClass);
         }
-
-    });
-
-};
-
-},{}],15:[function(require,module,exports){
-/**
-* _createButtons and add events to it
-* @since 0.1.0
-*/
-
-module.exports = function() {
-    var $dataSortBy = this.settings.dataSelectors.sortBy,
-        $dataSortDirection = this.settings.dataSelectors.sortDirection,
-        $defaultSort = this.settings.defaults.sort,
-        $sortArray = [],
-        $instance = this.instances[this.guid],
-        $self = this;
-
-    $.each($instance.sortContainer, function(key, container) {
-        var $sorters = container.elm.find('['+$dataSortBy+']');
-
-        $sorters.each(function(idx, elm) {
-            var $elm = $(elm),
-                $dataSortAttr = $elm.attr($dataSortBy),
-                how = {
-                    eventName: $elm.prop("tagName").toLowerCase() == "option" ? "change" : "click",
-                    element: $elm.prop("tagName").toLowerCase() == "option" ? $elm.closest("select") : $elm
-                };
-
-            how.element.on(how.eventName, function(e) {
-                e.preventDefault();
-
-                if(how.eventName == "change") {
-                    if(how.element.find('option:selected')[0] != elm) {
-                        return false;
-                    }
-                }
-
-                var $sortByValue = '',
-                    $sortAsc = false;
-
-                // TODO: I'm ganna leave this code here for now, if we ever need to add multiple support on sorters
-                // if($self.filterMultiple) {
-                //
-                //     $sortByValue = [];
-                //
-                //     if($dataSortAttr == $defaultSort) {
-                //
-                //         $sortArray = [];
-                //
-                //     } else {
-                //
-                //         if($sortArray.indexOf($dataSortAttr) === -1) {//item not filtered
-                //
-                //             $sortArray.push($dataSortAttr);
-                //
-                //         } else {//item already filtered
-                //
-                //             if($instance.isotope.options.sortAscending !== ($elm.attr($dataSortDirection).toLowerCase() === "asc")) {//Are we changing desc or asc?
-                //                 //Do nothing, array will be the same, we're only chanigng sort direction
-                //             } else {
-                //                 $sortArray.splice($sortArray.indexOf($dataSortAttr), 1); //same item filtered, remove this item from array
-                //             }
-                //         }
-                //
-                //     }
-                //
-                //     if($sortArray.length === 0) {
-                //         $sortByValue = $defaultSort;
-                //     } else {
-                //         $sortByValue = $sortArray;
-                //     }
-                //
-                // } else {
-                //     $sortByValue = $dataSortAttr;
-                // }
-
-                $sortByValue = $dataSortAttr;
-
-                if($elm.attr($dataSortDirection) !== null && $elm.attr($dataSortDirection) !== undefined) {
-                    if($elm.attr($dataSortDirection).toLowerCase() === "asc") {
-                        $sortAsc = true;
-                    }
-                }
-
-                if($elm.attr($dataSortBy) == $defaultSort) {
-                    $sortAsc = true;
-                }
-
-                $instance.isotope.arrange({
-                    sortBy: $sortByValue,
-                    sortAscending: $sortAsc
-                });
-
-                $self._onIsotopeChange.call($self, $instance);
-
-            });
-        });
-    });
+    }
 
 };
 
-},{}],16:[function(require,module,exports){
-module.exports = function() {
-    var $instance = this.instances[this.guid],
+},{}],17:[function(require,module,exports){
+module.exports = function(instance) {
+    var $instance = instance || this.instances[this.guid],
         $self = this;
 
-    $.each($instance.feedbackContainer, function(key, container) {
-        var $feedback = container.elm;
+    $.each(this.eventElements.feedback, function(idx, elm) {
+        var $feedback = $(elm);
 
         $feedback.each(function(idx, elm) {
             var $elm = $(elm);
+
             $elm.text($elm.attr("data-feedback").replace("{delta}", $instance.isotope.filteredItems.length));
         });
     });
 };
 
-},{}],17:[function(require,module,exports){
-/**
-* _getElementFromDataAttribute
-* @since 0.1.0
-* @update 0.2.1
-*/
-module.exports = function(selector) {
-    var $tmp;
-
-    if(selector === "" || selector === false || selector === undefined) {
-        return false;
-    }
-
-    if(selector instanceof jQuery) {
-        return selector;
-    }
-
-    if(selector.charAt(0) === "#" || selector.charAt(0) === ".") {				//this looks like a valid CSS selector
-        $tmp = $(selector);
-    } else if(selector.indexOf("#") !== -1 || selector.indexOf(".") !== -1) {	//this looks like a valid CSS selector
-        $tmp = $(selector);
-    } else if(selector.indexOf(" ") !== -1) {									//this looks like a valid CSS selector
-        $tmp = $(selector);
-    } else {																	//evulate the string as an id
-        $tmp = $("#" + selector);
-    }
-
-    if($tmp.length === 0) {
-        // throw new Error("simpletope: We cannot find any DOM element with the CSS selector: '" + selector + "'");
-        return false;
-    } else {
-        return $tmp;
-    }
-};
-
 },{}],18:[function(require,module,exports){
 module.exports = function(filter) {
     var guid = this.guid,
-        allFilters = this.allFilters[guid];
+        $instance = this.instances[this.guid];
 
     return function( item ) {
 
@@ -889,22 +885,11 @@ module.exports = function(filter) {
 
         }
 
-        var filterMethod;
-        if(filters.indexOf("*") === -1) {
-
-            $.each(filters, function(idx, elm) {
-                if(allFilters[elm].filterMethod === "or") {
-                    filterMethod = "or";
-                } else {
-                    filterMethod = "and";
-                }
-            });
-
-        } else {
+        if(filters.indexOf("*") !== -1) {
             return true;
         }
 
-        if(filterMethod == "or") {
+        if($instance.isotope.isMultiple == "or") {
             return active.length > 0;
         } else {
             return active.length == filters.length;
@@ -915,55 +900,6 @@ module.exports = function(filter) {
 };
 
 },{}],19:[function(require,module,exports){
-/**
-* _getForContainerAndId: Get an id or fallback to a parent div
-* @since 0.2.2
-* @param {object} $elm
-* @param {object} timestamp
-*/
-module.exports = function($elm, timestamp) {
-    var forElement, container, forContainer,
-        idContainer, parentContainer, idElement;
-
-    // Check if this container is assisnged to a specified isotope instance
-    forContainer = $elm.closest('[' + this.settings.dataSelectors.forContainer + ']');
-    if( forContainer.length > 0 ) {
-
-        forElement = forContainer.attr(this.settings.dataSelectors.forContainer);
-        container = forContainer;
-
-    }
-
-    // Get the closest id
-    idContainer = $elm.closest('[id]');
-    if( idContainer.length > 0 ) {
-
-        idElement = idContainer.attr('id');
-        container = (!container) ? idContainer : container; //If container has not been defined, define it.
-
-    } else {
-
-        var formatted = $($elm.parent()).text().trim().replace(/[^!a-zA-Z0-9]/g, "");
-        idElement = (formatted === "") ? timestamp : formatted ;
-        container = (!container) ? $elm.parent() : container; //If container has not been defined, define it.
-
-    }
-
-    var filterContainerMultiple = $(container).attr(this.settings.dataSelectors.filterMultiple),
-        filterMultiple = ( filterContainerMultiple !== null && filterContainerMultiple !== undefined ),
-        filterMethod = filterContainerMultiple || "or";
-
-    return {
-        isFor: forElement || this.guid,
-        id: idElement,
-        elm: $(container),
-        filterMultiple: filterMultiple,
-        filterMethod: filterMethod
-    };
-
-};
-
-},{}],20:[function(require,module,exports){
 /**
 * _getInstances
 * @since 0.1.0
@@ -978,7 +914,7 @@ module.exports =  function() {
     return tmp;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * _getSortData: Get the data-sort-by attributes and make them into an Isotope "getSortData" object
  * @since 0.1.0
@@ -1006,58 +942,5 @@ module.exports =  function() {
     return $sortData;
 };
 
-},{}],22:[function(require,module,exports){
-/**
-* _setContainers: Set the filters/sorters/clear containers to the right Isotope container
-* @since 0.1.0
-* @updated 0.2.2
-* @param {object} $instance
-*/
-
-module.exports = function($instance) {
-    var $self = this,
-        sh = $self.instances[$self.guid],
-        timestamp = new Date().getTime();
-
-    $('[data-filter]:first-child').each(eachItem.bind({ dataType: 'data-filter' }));
-    $('[data-sort-by]:first-child').each(eachItem.bind({ dataType: 'data-sort-by' }));
-    $('[data-clear-filter]').each(eachItem.bind({ dataType: 'data-clear-filter' }));
-    $('[data-feedback]').each(eachItem.bind({ dataType: 'data-feedback' }));
-
-    function eachItem(ind, elm) {
-        var $elm = $(elm),
-            dataType = this.dataType,
-            filterContainer = $self.utils._getForContainerAndId.call($self, $elm, timestamp);
-
-        if( $self.guid === filterContainer.isFor || filterContainer.isFor === false) {
-            if( dataType === "data-filter" ) {
-                sh.filterContainer[filterContainer.id] = filterContainer;
-            } else if( dataType === "data-sort-by" ) {
-                sh.sortContainer[filterContainer.id] = filterContainer;
-            } else if( dataType === "data-clear-filter" ) {
-                sh.clearContainer[filterContainer.id] = filterContainer;
-            } else if( dataType === "data-feedback" ) {
-                sh.feedbackContainer[filterContainer.id] = filterContainer;
-            }
-        }
-
-        if( dataType === "data-filter" || dataType === "data-sort-by" ) {
-            var filters = filterContainer.elm.find('['+dataType+']');
-
-            filters.each(function(index, filter) {
-                if($self.guid === filterContainer.isFor) {
-                    if( $(filter).attr(dataType) !== "*" ) { //TODO: how to handle wildcard?
-                        if( dataType === "data-filter" ) {
-                            $self.allFilters[filterContainer.isFor][$(filter).attr(dataType)] = sh.filterContainer[filterContainer.id];
-                        } else if( dataType === "data-sort-by" ) {
-                            $self.allSorters[filterContainer.isFor][$(filter).attr(dataType)] = sh.sortContainer[filterContainer.id];
-                        }
-                    }
-                }
-            });
-        }
-    }
-};
-
-},{}]},{},[13,12])(13)
+},{}]},{},[14,13])(14)
 });

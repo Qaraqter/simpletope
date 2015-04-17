@@ -1,6 +1,6 @@
 module.exports = function(filter) {
     var guid = this.guid,
-        allFilters = this.allFilters[guid];
+        $instance = this.instances[this.guid];
 
     return function( item ) {
 
@@ -33,22 +33,11 @@ module.exports = function(filter) {
 
         }
 
-        var filterMethod;
-        if(filters.indexOf("*") === -1) {
-
-            $.each(filters, function(idx, elm) {
-                if(allFilters[elm].filterMethod === "or") {
-                    filterMethod = "or";
-                } else {
-                    filterMethod = "and";
-                }
-            });
-
-        } else {
+        if(filters.indexOf("*") !== -1) {
             return true;
         }
 
-        if(filterMethod == "or") {
+        if($instance.isotope.isMultiple == "or") {
             return active.length > 0;
         } else {
             return active.length == filters.length;

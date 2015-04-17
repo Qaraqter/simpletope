@@ -16,26 +16,29 @@ $.simpleIsotope.prototype = {
         _onHashChanged: require("./hash/_onHashChanged.js")
     },
     filter: {
-        _createButtons: require("./filter/_createFilters.js"),
-        _check: require("./filter/_check.js")
+        _initFilters: require("./filter/_initFilters.js"),
+        _setActiveClass: require("./filter/_setActiveClass.js")
     },
     sorter: {
-        _createButtons: require("./sorter/_createSorters.js"),
-        _check: require("./sorter/_check.js")
+        _initSorters: require("./sorter/_initSorters.js"),
+        _setActiveClass: require("./sorter/_setActiveClass.js")
     },
     clear: {
-        _createButtons: require("./clear/_createClearers.js"),
+        _initClearers: require("./clear/_initClearers.js"),
         _check: require("./clear/_check.js"),
         __check: require("./clear/__check.js")
     },
     text: {
         _feedback: require("./text/_feedback.js")
     },
+    events: {
+        _attach: require("./events/_attach.js")
+    },
     utils: {
-        _setContainers: require("./utils/_setContainers.js"),
-        _getForContainerAndId: require("./utils/_getForContainerAndId.js"),
+        // _setContainers: require("./utils/_setContainers.js"),
+        // _getForContainerAndId: require("./utils/_getForContainerAndId.js"),
+        // _getElementFromDataAttribute: require("./utils/_getElementFromDataAttribute.js"),
         _getSortData: require("./utils/_getSortData.js"),
-        _getElementFromDataAttribute: require("./utils/_getElementFromDataAttribute.js"),
         _getFilterTest: require("./utils/_getFilterTest.js"),
         _getInstances: require("./utils/_getInstances.js")
     },
@@ -53,11 +56,11 @@ $.simpleIsotope.prototype = {
     * @param {string} $instance
     */
     _onIsotopeChange: function($instance) {
-        this.filter._check.call(this, $instance);
-        this.sorter._check.call(this, $instance);
+        this.filter._setActiveClass.call(this, $instance);
+        this.sorter._setActiveClass.call(this, $instance);
 
-        this.clear._check.call(this, $instance.isotope);
-        this.text._feedback.call(this, $instance.isotope);
+        this.clear._check.call(this, $instance);
+        this.text._feedback.call(this, $instance);
     },
 
     /**

@@ -1,6 +1,6 @@
 {
   "name": "simpleIsotope",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Simplified filter and sort magical layouts",
   "dependencies": {
     "browserify": "^8.1.3",

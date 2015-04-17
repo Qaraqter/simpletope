@@ -62,7 +62,7 @@ To reset all filters you can specify the value `*` in the `data-filter` attribut
     <button data-filter="*" class="btn btn-default">All</button>
 
 ### Single or multiple filters
-By default the filters will only apply one filter. if you would like to have multiple filters applied then you can use `data-filter-multiple` attribute on the container of your filters. The value of this attribute can be `or` or `and` (see Advanced filtering for more on `or` and `and`).
+By default a filtergroup will only apply one filter. if you would like to have multiple filters applied then you can use `data-filter-multiple` attribute on the container of your filters. The value of this attribute can be `or` or `and` (see Advanced filtering for more on `or` and `and`).
 
     <div id="filters" data-filter-multiple="or">
         <button data-filter="*" class="btn btn-default">All</button>

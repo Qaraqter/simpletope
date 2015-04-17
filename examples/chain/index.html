@@ -46,7 +46,7 @@
         <div class="container">
             <article>
                 <div class="row">
-                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3" data-isotope-container="results">
+                    <div id="filterButtonsAttribute" class="col-sm-3 col-md-3">
                         <label>Filter by category:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter="*" class="btn btn-default active"><i class="fa fa-asterisk"></i></button>
@@ -55,7 +55,7 @@
                             <button data-filter="[data-category='Science']" class="btn btn-default"><i class="fa fa-flask"></i></button>
                         </div>
                     </div>
-                    <div id="filterButtonsClass" class="col-sm-9 col-md-9" data-isotope-container="results" data-filter-multiple="or">
+                    <div id="filterButtonsClass" class="col-sm-9 col-md-9">
                         <label>Filter by color:</label>
                         <div class="btn-group" style="display:block;">
                             <button data-filter=".blue" class="btn btn-default">Blue</button>
@@ -68,8 +68,7 @@
 
                 <div id="results"
                     data-isotope
-                    data-filter-chain-method="or"
-                >
+                    data-filter-chain="#filterButtonsAttribute, #filterButtonsClass">
 
                     <section class="item col-xs-12 col-sm-6 col-md-4 brown" data-date="20141020" data-category="Game" data-colour="brown">
                         <div class="thumbnail">
@@ -115,7 +114,7 @@
                         </div>
                     </section>
 
-                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140801" data-category="Game" data-colour="blue">
+                    <section class="item col-xs-12 col-sm-6 col-md-4 brown" data-date="20140801" data-category="Game" data-colour="brown">
                         <div class="thumbnail">
                             <div class="visual"><img src="https://farm9.staticflickr.com/8054/8084593193_da65417ee2.jpg" alt=""></div>
                             <div class="caption">
@@ -137,7 +136,7 @@
                         </div>
                     </section>
 
-                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140712" data-category="Game" data-colour="blue">
+                    <section class="item col-xs-12 col-sm-6 col-md-4 black" data-date="20140712" data-category="Game" data-colour="black">
                         <div class="thumbnail">
                             <div class="visual"><img src="https://farm1.staticflickr.com/118/303621330_15e8719059.jpg" alt=""></div>
                             <div class="caption">
@@ -148,7 +147,7 @@
                         </div>
                     </section>
 
-                    <section class="item col-xs-12 col-sm-6 col-md-4 blue" data-date="20140701" data-category="Science" data-colour="blue">
+                    <section class="item col-xs-12 col-sm-6 col-md-4 black" data-date="20140701" data-category="Science" data-colour="black">
                         <div class="thumbnail">
                             <div class="visual"><img src="https://farm9.staticflickr.com/8479/8212491631_5910e959f2.jpg" alt=""></div>
                             <div class="caption">
